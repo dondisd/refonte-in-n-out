@@ -19,88 +19,89 @@
   --font-body:'Inter', sans-serif;
   --font-edito:'Instrument Serif', serif;
   --font-mono:'Space Mono', monospace;
-  --step-hero: clamp(2.9rem, min(15vw, 12vh), 10rem);
-  --step-h2:   clamp(1.5rem, 5vw, 3.2rem);
+  --step-hero: clamp(3rem, min(15.5vw, 12.5vh), 10.5rem);
+  --step-h2:   clamp(1.7rem, 6vw, 3.6rem);
   --step-h3:   clamp(1.05rem, 3.2vw, 1.7rem);
-  --step-body: clamp(0.92rem, 2.8vw, 1.05rem);
-  --step-small:clamp(0.76rem, 2.3vw, 0.86rem);
-  --step-label:clamp(0.56rem, 1.9vw, 0.68rem);
+  --step-lede: clamp(1.15rem, 4.4vw, 1.9rem);
+  --step-body: clamp(0.95rem, 2.8vw, 1.08rem);
+  --step-small:clamp(0.78rem, 2.3vw, 0.9rem);
+  --step-label:clamp(0.58rem, 1.9vw, 0.7rem);
   --step-count:clamp(2rem, 8.5vw, 4rem);
   --r-0:0; --r-1:4px; --r-pill:999px;
   --t-fast:0.25s; --t-slow:0.75s;
   --ease:cubic-bezier(0.16,1,0.3,1);
   --shadow:0 24px 48px rgba(0,0,0,0.55);
   --grain-opacity:0.055;
-  /* le hero est plus grand que les sections : c est lui qui porte le film */
-  --frame: min(94vw, 66vh);
-  --pad: 14px;
+  --pad: 16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg)}
+html{background:var(--bg);scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:var(--step-body);
   line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:clip}
-button,input{font:inherit;color:inherit}
+button{font:inherit;color:inherit}
 ::selection{background:var(--signal);color:var(--text)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 img{display:block;max-width:100%}
 
-/* ============ ARCHITECTURE #33 : spacer long, tout le visible en fixed ============ */
-#spacer{position:relative;height:calc(100vh + 12600px)}
-.stage{position:relative;height:100vh;height:100dvh;min-height:560px;overflow:hidden;background:var(--bg)}
+/* ================================================================
+   LE HERO EST LE SEUL ENDROIT SCRUBBE DU SITE.
+   Un seul spacer, un seul pin, une seule tete de lecture, treize plans.
+   Tout ce qui vient apres defile normalement : plus aucun scrub.
+   ================================================================ */
+#hero{position:relative;height:calc(100vh + 9400px)}
+.stage{position:sticky;top:0;height:100vh;height:100dvh;min-height:560px;overflow:hidden;background:var(--bg)}
 
-/* ---- LE HERO. Sept plans qui defilent sur une seule tete de lecture. ---- */
-.plate{position:absolute;inset:0;z-index:1;display:grid;place-items:center;will-change:transform}
-.plate img,.plate canvas{width:var(--frame);height:calc(var(--frame)*1.3);object-fit:contain;
-  -webkit-mask-image:radial-gradient(ellipse 66% 64% at 50% 52%, #000 44%, transparent 97%);
-  mask-image:radial-gradient(ellipse 66% 64% at 50% 52%, #000 44%, transparent 97%)}
-.plate.wide img{width:min(97vw,74vh*0.75);height:calc(min(97vw,74vh*0.75)*1.3)}
+.plate{position:absolute;inset:0;z-index:1;overflow:hidden;will-change:transform}
+/* PLEIN ECRAN. Le plan occupe tout le cadre, le sujet reste centre, et c est le
+   voile qui rend la typographie lisible par-dessus, plus le noir natif autour. */
+.plate img,.plate canvas,.plate picture{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block}
 
-.grain{position:absolute;inset:0;z-index:92;pointer-events:none;opacity:var(--grain-opacity);mix-blend-mode:overlay;
+.grain{position:fixed;inset:0;z-index:92;pointer-events:none;opacity:var(--grain-opacity);mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='140' height='140' filter='url(%23g)'/></svg>")}
 .vign{position:absolute;inset:0;z-index:91;pointer-events:none;
   background:radial-gradient(ellipse at 50% 46%, rgba(11,10,9,0) 36%, rgba(11,10,9,0.8) 100%)}
-.scrim{position:absolute;left:0;right:0;top:0;height:58vh;z-index:9;pointer-events:none;
-  background:linear-gradient(to bottom, rgba(11,10,9,0.9) 0%, rgba(11,10,9,0.55) 48%, rgba(11,10,9,0) 100%)}
-.scrim.low{top:auto;bottom:0;height:44vh;
-  background:linear-gradient(to top, rgba(11,10,9,0.92) 0%, rgba(11,10,9,0.44) 56%, rgba(11,10,9,0) 100%)}
+.scrim{position:absolute;left:0;right:0;top:0;height:70vh;z-index:9;pointer-events:none;
+  background:linear-gradient(to bottom, rgba(11,10,9,0.94) 0%, rgba(11,10,9,0.66) 44%, rgba(11,10,9,0) 100%)}
+.scrim.low{top:auto;bottom:0;height:46vh;
+  background:linear-gradient(to top, rgba(11,10,9,0.92) 0%, rgba(11,10,9,0.42) 58%, rgba(11,10,9,0) 100%)}
 
-/* ============ HABILLAGE ============ */
+/* ---------------- HABILLAGE ---------------- */
 .mono{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
 
-/* barre du haut : LEGERE. Quatre entrees, pas dix. */
 .top{position:fixed;z-index:80;top:0;left:0;right:0;height:clamp(42px,6vh,54px);
   display:flex;align-items:center;justify-content:space-between;gap:1em;
-  padding:0 var(--pad);border-bottom:1px solid var(--surface);background:rgba(11,10,9,0.7);
+  padding:0 var(--pad);border-bottom:1px solid var(--surface);background:rgba(11,10,9,0.72);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .top .lg{display:flex;align-items:center;gap:0.55em;flex:0 0 auto}
 .arrow{width:clamp(30px,7vw,42px);height:auto;color:var(--accent)}
 .top .lg b{display:none;font-family:var(--font-display);font-weight:900;letter-spacing:-0.02em;
   font-size:var(--step-small);line-height:1}
-.nav{display:flex;gap:clamp(9px,2vw,26px)}
+.nav{display:flex;gap:clamp(10px,2.2vw,28px)}
 .nav a{color:var(--muted);text-decoration:none;font-family:var(--font-mono);font-size:var(--step-label);
   letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;transition:color var(--t-fast) var(--ease)}
-.nav a:hover,.nav a[aria-current="true"]{color:var(--text)}
+.nav a:hover{color:var(--text)}
 .top .rec{display:none;font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.12em;color:var(--accent)}
 
-.ret{position:fixed;z-index:79;width:clamp(15px,3.6vw,28px);height:clamp(15px,3.6vw,28px);
-  border:1px solid var(--line);opacity:0.3;pointer-events:none}
+.ret{position:absolute;z-index:79;width:clamp(15px,3.6vw,28px);height:clamp(15px,3.6vw,28px);
+  border:1px solid var(--line);opacity:0.28;pointer-events:none}
 .ret.a{top:clamp(54px,8vh,70px);left:10px;border-right:0;border-bottom:0}
 .ret.b{top:clamp(54px,8vh,70px);right:10px;border-left:0;border-bottom:0}
 .ret.c{bottom:clamp(56px,8.6vh,74px);left:10px;border-right:0;border-top:0}
 .ret.d{bottom:clamp(56px,8.6vh,74px);right:10px;border-left:0;border-top:0}
 
-.gauge{position:fixed;z-index:78;right:var(--pad);top:clamp(56px,8.6vh,76px);text-align:right;pointer-events:none}
+.gauge{position:absolute;z-index:78;right:var(--pad);top:clamp(56px,8.6vh,76px);text-align:right;pointer-events:none}
 .gauge u{display:block;text-decoration:none;color:var(--muted);font-family:var(--font-mono);
   font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
 .gauge b{display:block;font-family:var(--font-mono);font-weight:700;color:var(--accent);
   font-size:var(--step-count);line-height:0.86;letter-spacing:-0.02em;text-shadow:0 0 18px rgba(255,203,5,0.26)}
-.bar{position:fixed;z-index:78;right:calc(var(--pad) + 2px);top:26vh;bottom:20vh;width:4px;
+.bar{position:absolute;z-index:78;right:calc(var(--pad) + 2px);top:26vh;bottom:20vh;width:4px;
   background:var(--surface);pointer-events:none;border-radius:var(--r-pill);overflow:hidden}
 .bar s{position:absolute;left:0;right:0;bottom:0;display:block;text-decoration:none;
   background:linear-gradient(to top,#FF6A1A,var(--accent))}
 
-.foot{position:fixed;z-index:80;left:0;right:0;bottom:0;padding:0 var(--pad) max(8px,env(safe-area-inset-bottom));
-  border-top:1px solid var(--surface);background:rgba(11,10,9,0.7);
+.foot{position:absolute;z-index:80;left:0;right:0;bottom:0;padding:0 var(--pad) max(8px,env(safe-area-inset-bottom));
+  border-top:1px solid var(--surface);background:rgba(11,10,9,0.72);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none}
 .rule{position:relative;height:15px;margin:0 0 2px}
 .rule i{position:absolute;left:0;right:0;top:7px;height:1px;background:var(--surface);display:block}
@@ -108,165 +109,156 @@ img{display:block;max-width:100%}
 .rule em{position:absolute;top:2px;width:11px;height:11px;border-radius:var(--r-pill);background:var(--accent)}
 .instr{display:flex;align-items:baseline;justify-content:space-between;gap:1em;padding-bottom:7px;
   font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.13em;text-transform:uppercase;color:var(--muted)}
-.instr .r{display:flex;gap:clamp(8px,1.8vw,22px);white-space:nowrap;overflow:hidden}
-.instr .r span:nth-child(n+2){display:none}
 .dot{color:var(--accent)}
 
-/* ============ LES MOTS DU HERO ============ */
+/* ---------------- LES MOTS DU HERO ----------------
+   Peu de mots, et la voix editoriale pour la ligne de lecture.
+   Le grotesque crie, le serif raconte, le mono mesure. */
 .blk{position:absolute;z-index:20;left:var(--pad);right:var(--pad);will-change:transform;pointer-events:none;
-  top:clamp(74px,11.5vh,104px)}
+  top:clamp(76px,12vh,110px)}
 .eyebrow{color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);
-  letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.45em}
-.blk h2{font-family:var(--font-display);font-size:var(--step-hero);font-weight:900;line-height:0.83;
+  letter-spacing:0.22em;text-transform:uppercase;margin-bottom:0.5em}
+.blk h2{font-family:var(--font-display);font-size:var(--step-hero);font-weight:900;line-height:0.82;
   letter-spacing:-0.05em;text-transform:uppercase;text-wrap:balance}
 .blk h2 em{font-family:var(--font-edito);font-style:italic;font-weight:400;text-transform:none;letter-spacing:-0.02em}
-.blk p{margin-top:0.8em;max-width:32ch;color:var(--line);font-family:var(--font-mono);
-  font-size:var(--step-small);line-height:1.7}
-.blk .cite{color:var(--muted)}
-.blk .specs{margin-top:0.9em;max-width:min(92vw,400px);border-top:1px solid var(--surface);
-  background:rgba(11,10,9,0.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  padding:0 0.7em;border-radius:var(--r-1)}
-.specs div{display:flex;align-items:baseline;justify-content:space-between;gap:1em;
-  border-bottom:1px solid var(--surface);padding:0.4em 0;
-  font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.1em;text-transform:uppercase}
-.specs u{text-decoration:none;color:var(--muted)}
-.specs b{color:var(--text);font-weight:700;text-align:right}
+.blk p{margin-top:0.55em;max-width:22ch;color:var(--line);
+  font-family:var(--font-edito);font-size:var(--step-lede);line-height:1.28;letter-spacing:-0.005em}
 
-/* la sortie du hero, annoncee : le seul texte qui dit ce qui vient ensuite */
-.exit{position:absolute;z-index:21;left:var(--pad);right:var(--pad);bottom:clamp(62px,10vh,86px);
+.exit{position:absolute;z-index:21;left:var(--pad);right:var(--pad);bottom:clamp(64px,10vh,88px);
   text-align:center;will-change:transform;pointer-events:none;
-  font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.22em;
+  font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--muted)}
-.exit b{display:block;color:var(--accent);font-size:var(--step-h3);letter-spacing:0.04em;margin-top:0.3em}
+.exit b{display:block;color:var(--accent);font-size:var(--step-h3);letter-spacing:0.04em;margin-top:0.35em}
 
-/* ============ LES SECTIONS ============ */
-.pan{position:absolute;inset:0;z-index:30;background:var(--bg);will-change:transform;overflow:hidden;
-  display:flex;flex-direction:column;gap:clamp(8px,1.6vh,18px);
-  padding:clamp(62px,9.5vh,92px) var(--pad) clamp(50px,7.6vh,66px)}
-.pan .hd{display:flex;align-items:baseline;justify-content:space-between;gap:1em;flex:0 0 auto}
-.pan h2{font-family:var(--font-display);font-size:var(--step-h2);font-weight:900;line-height:0.9;
+/* ================================================================
+   APRES LE HERO : flux normal. Aucun scrub, aucun pin, aucun fixed.
+   ================================================================ */
+main{position:relative;z-index:50;background:var(--bg)}
+.sec{padding:clamp(56px,10vh,110px) var(--pad) clamp(74px,11vh,110px);
+  border-top:1px solid var(--surface)}
+.sec .hd{display:flex;align-items:baseline;justify-content:space-between;gap:1em;
+  margin-bottom:clamp(18px,3.6vh,40px)}
+.sec h2{font-family:var(--font-display);font-size:var(--step-h2);font-weight:900;line-height:0.9;
   letter-spacing:-0.04em;text-transform:uppercase}
-.pan h2 span{color:var(--accent)}
-.pan .hd .mono{color:var(--muted)}
-.body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.sec h2 span{color:var(--accent)}
+.sec .hd .mono{color:var(--muted)}
+.lede{font-family:var(--font-edito);font-size:var(--step-lede);line-height:1.3;color:var(--line);
+  max-width:26ch;margin-bottom:clamp(16px,3vh,32px)}
 
-/* 01 · BUILD YOURS */
-.wrap{display:grid;grid-template-columns:1fr;gap:clamp(6px,1.4vh,16px);min-height:0;align-items:center}
-.stack{--ih:min(33vh,56vw);--ov:0;display:flex;flex-direction:column;align-items:center;
-  justify-self:center;width:var(--ih)}
+/* 01 · les trois burgers. PAS une grille de trois cartes identiques, c est un
+   interdit du contrat : elles sont decalees, de largeurs et de hauteurs differentes,
+   comme trois affiches punaisees. */
+.cards{display:flex;flex-direction:column;gap:clamp(10px,2.4vh,26px)}
+.card{border:1px solid var(--surface);border-radius:var(--r-1);overflow:hidden;align-self:flex-start;
+  width:min(100%,var(--w,100%));margin-left:var(--x,0)}
+.card:nth-child(1){--w:88%}
+.card:nth-child(2){--w:76%;--x:12%}
+.card:nth-child(3){--w:100%}
+.card img{width:100%;aspect-ratio:var(--ar,4/3);object-fit:cover}
+.card:nth-child(2) img{--ar:1/1}
+.card:nth-child(3) img{--ar:16/10}
+.card .tx{padding:0.85em 0.95em 1em}
+.card h3{font-family:var(--font-display);font-weight:900;font-size:var(--step-h3);letter-spacing:-0.02em;
+  text-transform:uppercase;line-height:1}
+.card p{margin-top:0.35em;color:var(--muted);font-family:var(--font-edito);font-size:var(--step-body);line-height:1.35}
+
+/* 02 · l outil */
+.wrap{display:grid;grid-template-columns:1fr;gap:clamp(14px,3vh,30px);align-items:center}
+.stack{--ih:min(42vh,72vw);display:flex;flex-direction:column;align-items:center;justify-self:center;
+  width:var(--ih)}
+/* les couches ne sont plus separees mecaniquement : elles sont MONTEES, et une
+   couche qui change tombe en place avec un retard propre. Le desassemblage
+   cinematique, lui, est dans le hero, en vraie sequence generee. */
 .ly{width:100%;background-image:url('img/p5-eclate-720.webp');background-repeat:no-repeat;
   background-size:100% var(--ih);mix-blend-mode:lighten;
   height:calc(var(--ih)*var(--h));background-position:0 calc(var(--ih)*var(--y)*-1);
-  margin-top:calc(var(--ih)*var(--ov)*-1);
+  margin-top:calc(var(--ih)*-0.028);
   -webkit-mask-image:linear-gradient(to right, transparent 8%, #000 22%, #000 78%, transparent 92%);
   mask-image:linear-gradient(to right, transparent 8%, #000 22%, #000 78%, transparent 92%);
-  /* aucune transition : l assemblage est SCRUBBE par la tete de lecture */
-  will-change:transform,margin-top}
-.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  /* la couche tombe en place a l insertion. Animation CSS et non transition :
+     une transition exigerait un requestAnimationFrame maison, que le contrat interdit. */
+  animation:settle var(--t-slow) var(--ease) both;animation-delay:var(--lag,0s)}
+@keyframes settle{ from{ transform:translate3d(0,-26vh,0) rotate(var(--tilt,0deg)) } to{ transform:none } }
+.ly:first-child{margin-top:0}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button{flex:1 1 calc(33.333% - 4px)}
+.opts button:nth-child(4),.opts button:nth-child(7){flex-basis:calc(40% - 4px)}
 .opts button{border:1px solid var(--surface);background:transparent;color:var(--line);
   border-radius:var(--r-1);padding:0;font-family:var(--font-mono);font-size:var(--step-label);
   letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;overflow:hidden;
   display:flex;flex-direction:column;align-items:stretch;
   transition:border-color var(--t-fast) var(--ease),color var(--t-fast) var(--ease)}
 .opts button img{width:100%;aspect-ratio:16/9;object-fit:cover}
-.opts button span{padding:0.42em 0.3em;text-align:center}
+.opts button span{padding:0.45em 0.3em;text-align:center}
 .opts button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
-.desc{margin-top:0.55em;color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);
-  line-height:1.65;min-height:5em}
-.desc b{color:var(--text);font-weight:700}
+.desc{margin-top:0.8em;color:var(--muted);font-family:var(--font-edito);font-size:var(--step-body);
+  line-height:1.4;min-height:4.5em}
+.desc b{color:var(--text);font-weight:400;font-style:italic}
+.readout{display:flex;align-items:baseline;gap:0.6em;margin-top:0.6em;
+  font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--muted)}
+.readout b{color:var(--accent);font-size:var(--step-h3);font-weight:700}
 
-/* 02 · LE MENU, trois cartes */
-.cards{display:grid;grid-template-columns:1fr;gap:clamp(5px,1.2vh,12px)}
-.card{border:1px solid var(--surface);border-radius:var(--r-1);overflow:hidden;display:grid;
-  grid-template-columns:32% 1fr}
-.card img{width:100%;height:100%;object-fit:cover}
-.card .tx{padding:0.7em 0.8em;display:flex;flex-direction:column;gap:0.28em;justify-content:center}
-.card h3{font-family:var(--font-display);font-weight:900;font-size:var(--step-h3);letter-spacing:-0.02em;
-  text-transform:uppercase;line-height:1}
-.card p{color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);line-height:1.55}
+/* 03 · 1948. Les chiffres ne sont PAS une grille de donnees : ils sont une phrase.
+   C est ce qui sort ce site de l empreinte deja portee par bombardier, et ca lit mieux. */
+.tally{font-family:var(--font-edito);font-size:var(--step-h2);line-height:1.12;
+  letter-spacing:-0.02em;max-width:20ch;margin-bottom:clamp(20px,4vh,44px)}
+.tally em{font-style:italic;color:var(--accent)}
+.arch{display:flex;flex-wrap:wrap;gap:8px}
+.ar{flex:1 1 calc(50% - 4px)}
+.ar:nth-child(1){flex-basis:100%}
+.ar{border:1px solid var(--surface);border-radius:var(--r-1);overflow:hidden}
+.ar img{width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(0.58)}
+.ar .tx{padding:0.6em 0.7em 0.75em}
+.ar h3{font-family:var(--font-edito);font-size:var(--step-body);line-height:1.15}
+.ar p{color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);line-height:1.55;margin-top:0.3em}
 
-/* 03 · LE CARROUSEL D INGREDIENTS */
-.rail{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.ing{flex:0 0 clamp(180px,58vw,280px);scroll-snap-align:start;border:1px solid var(--surface);
-  border-radius:var(--r-1);overflow:hidden;display:flex;flex-direction:column}
-.ing img{width:100%;aspect-ratio:5/4;object-fit:cover;flex:0 0 auto}
-.ing .tx{padding:0.6em 0.7em;display:flex;flex-direction:column;gap:0.22em}
-.ing .n{font-family:var(--font-mono);font-size:var(--step-label);color:var(--accent);letter-spacing:0.16em}
-.ing h3{font-family:var(--font-display);font-weight:900;font-size:var(--step-small);
-  letter-spacing:0.02em;text-transform:uppercase}
-.ing p{color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);line-height:1.55}
-
-/* 04 · 1948 : les chiffres et les archives ensemble */
-.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,22px);
-  border-bottom:1px solid var(--surface);padding-bottom:clamp(8px,1.8vh,18px)}
-.nums div{border-left:1px solid var(--surface);padding-left:0.55em}
-.nums b{display:block;font-family:var(--font-mono);font-weight:700;color:var(--accent);
-  font-size:var(--step-h3);line-height:0.9;letter-spacing:-0.02em}
-.nums u{display:block;text-decoration:none;margin-top:0.35em;font-family:var(--font-mono);
-  font-size:var(--step-label);letter-spacing:0.13em;text-transform:uppercase;color:var(--muted)}
-.arch{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.ar{flex:0 0 clamp(165px,56vw,250px);scroll-snap-align:start;
-  border:1px solid var(--surface);border-radius:var(--r-1);overflow:hidden}
-.ar img{width:100%;aspect-ratio:16/10;object-fit:cover;filter:saturate(0.6)}
-.ar .tx{padding:0.5em 0.62em}
-.ar h3{font-family:var(--font-edito);font-size:var(--step-small);line-height:1.15}
-.ar p{color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);line-height:1.5;margin-top:0.22em}
-
-/* 05 · LE REGISTRE */
-.ledger{position:absolute;inset:30vh 0 0;z-index:40;will-change:transform;
-  background:linear-gradient(to bottom, rgba(11,10,9,0) 0, var(--bg) 14%, var(--bg) 100%);
-  display:flex;flex-direction:column;justify-content:flex-end;gap:clamp(12px,2.6vh,26px);
-  padding:clamp(24px,5vh,48px) var(--pad) clamp(80px,11vh,106px)}
-.ledger .cols{display:flex;flex-wrap:wrap;gap:clamp(10px,3vw,30px);border-top:1px solid var(--surface);
-  padding-top:clamp(9px,1.9vh,18px)}
-.ledger .cols > div{flex:1 1 clamp(120px,40vw,190px)}
+/* pied */
+.ledger{padding:clamp(46px,8vh,90px) var(--pad) clamp(80px,11vh,110px);border-top:1px solid var(--surface)}
+.ledger .cols{display:flex;flex-wrap:wrap;gap:clamp(14px,4vw,44px)}
+.ledger .cols > div{flex:1 1 clamp(130px,42vw,200px)}
 .ledger h3{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.14em;
   text-transform:uppercase;color:var(--muted)}
-.ledger ul{list-style:none;margin-top:0.4em}
-.ledger li{font-size:var(--step-small);line-height:1.8}
+.ledger ul{list-style:none;margin-top:0.5em}
+.ledger li{font-size:var(--step-small);line-height:1.9}
 .ledger a{color:var(--text);text-decoration:none;border-bottom:1px solid transparent;
   transition:border-color var(--t-fast) var(--ease)}
 .ledger a:hover{border-bottom-color:var(--surface)}
-.ledger .mark{font-family:var(--font-edito);font-size:var(--step-h2);line-height:1;font-style:italic}
+.ledger .mark{font-family:var(--font-edito);font-size:var(--step-h2);line-height:1;font-style:italic;
+  margin:clamp(24px,5vh,52px) 0 clamp(16px,3vh,30px)}
 .ledger .legal{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.05em;
-  color:var(--muted);max-width:66ch;line-height:1.75}
+  color:var(--muted);max-width:66ch;line-height:1.8}
 
 .cta{position:fixed;z-index:85;right:var(--pad);bottom:calc(max(8px,env(safe-area-inset-bottom)) + 44px);
   background:var(--accent);color:var(--bg);border:0;border-radius:var(--r-pill);
   padding:0.72em 1.15em;font-family:var(--font-mono);font-weight:700;font-size:var(--step-label);
   letter-spacing:0.12em;text-transform:uppercase;box-shadow:var(--shadow);text-decoration:none}
 
-/* ============ ORDINATEUR ============ */
 @media (min-width:820px){
-  :root{--frame:min(46vw,72vh);--pad:clamp(24px,4vw,56px)}
-  .plate{place-items:center end;padding-right:clamp(24px,5vw,80px)}
-  .scrim{top:0;bottom:0;height:auto;width:62vw;
-    background:linear-gradient(to right, rgba(11,10,9,0.92) 0%, rgba(11,10,9,0.58) 54%, rgba(11,10,9,0) 100%)}
+  :root{--pad:clamp(28px,4.5vw,72px)}
+  .scrim{top:0;bottom:0;height:auto;width:60vw;
+    background:linear-gradient(to right, rgba(11,10,9,0.92) 0%, rgba(11,10,9,0.55) 54%, rgba(11,10,9,0) 100%)}
   .scrim.low{display:none}
   .top .rec{display:block}
   .top .lg b{display:block}
-  .blk{right:auto;width:min(46vw,660px);top:clamp(96px,16vh,180px)}
-  .exit{left:var(--pad);right:auto;text-align:left;width:min(46vw,660px)}
-  .instr .r span:nth-child(n+2){display:inline}
-  .wrap{grid-template-columns:1fr minmax(300px,1fr);gap:clamp(20px,4vw,60px)}
-  .stack{--ih:min(54vh,28vw);order:2}
+  .blk{right:auto;width:min(46vw,680px);top:clamp(100px,17vh,190px)}
+  .blk p{max-width:20ch}
+  .exit{left:var(--pad);right:auto;text-align:left;width:min(46vw,680px)}
+  .cards{flex-direction:row;align-items:flex-start}
+  .card:nth-child(1){--w:30%;--x:0;margin-top:clamp(20px,4vh,60px)}
+  .card:nth-child(2){--w:26%;--x:0}
+  .card:nth-child(3){--w:38%;--x:0;margin-top:clamp(8px,1.6vh,26px)}
+  .wrap{grid-template-columns:1fr minmax(320px,1fr);gap:clamp(30px,5vw,80px)}
+  .stack{--ih:min(62vh,32vw);order:2}
   .panel{order:1}
-  .opts{grid-template-columns:repeat(4,1fr)}
-  .cards{grid-template-columns:repeat(3,1fr)}
-  .card{grid-template-columns:1fr;align-content:start}
-  .card img{aspect-ratio:4/3}
-  .ing{flex-basis:clamp(210px,20vw,300px)}
-  .ar{flex-basis:clamp(200px,19vw,280px)}
+  .opts button{flex:1 1 calc(25% - 5px)}
+  .ar{flex:1 1 calc(28% - 6px)}
+  .ar:nth-child(1){flex-basis:calc(44% - 6px)}
 }
-@media (prefers-reduced-motion:reduce){ *{transition:none} }
+@media (prefers-reduced-motion:reduce){ *{transition:none} html{scroll-behavior:auto} }
 </style>
 </head>
 <body>
-
-<div class="ret a" aria-hidden="true"></div><div class="ret b" aria-hidden="true"></div>
-<div class="ret c" aria-hidden="true"></div><div class="ret d" aria-hidden="true"></div>
 
 <header class="top">
   <div class="lg">
@@ -275,211 +267,174 @@ img{display:block;max-width:100%}
     </svg>
     <b>IN&#8209;N&#8209;OUT</b>
   </div>
-  <nav class="nav" id="nav" aria-label="Sections"></nav>
+  <nav class="nav" aria-label="Sections">
+    <a href="#build">Build</a><a href="#menu">Menu</a><a href="#since">1948</a><a href="#find">Find</a>
+  </nav>
   <span class="rec" id="rec">REC 00:00:00:00</span>
 </header>
 
-<div class="gauge"><u id="gLab">Square feet</u><b id="gVal">100</b></div>
-<div class="bar" aria-hidden="true"><s id="gFill" style="height:0"></s></div>
 
-<footer class="foot">
-  <div class="rule"><i></i><s id="rFill" style="width:0"></s><em id="rKnob" style="left:0"></em></div>
-  <div class="instr">
-    <span id="fLeft">Hero · 01 / 07</span>
-    <span class="r">
-      <span id="fFrm">Frame 0000 / 1000</span>
-      <span><i class="dot">●</i> Scrub active</span>
-    </span>
-  </div>
-</footer>
+<a class="cta" href="#build">Build yours</a>
 
-<a class="cta" href="#find">Find a stand</a>
-
-<section id="spacer">
+<!-- ================= LE HERO, LE SEUL ENDROIT SCRUBBE ================= -->
+<section id="hero">
   <div class="stage">
 
-    <!-- ================= LE HERO : SEPT PLANS QUI DEFILENT ================= -->
+    <div class="ret a" aria-hidden="true"></div><div class="ret b" aria-hidden="true"></div>
+    <div class="ret c" aria-hidden="true"></div><div class="ret d" aria-hidden="true"></div>
+    
+    <div class="gauge"><u id="gLab">Square feet</u><b id="gVal">100</b></div>
+    <div class="bar" aria-hidden="true"><s id="gFill" style="height:0"></s></div>
+    
+    <footer class="foot">
+      <div class="rule"><i></i><s id="rFill" style="width:0"></s><em id="rKnob" style="left:0"></em></div>
+      <div class="instr">
+        <span id="fLeft">Hero · 01 / 13</span>
+        <span id="fFrm"><i class="dot">●</i> Scrub active</span>
+      </div>
+    </footer>
+
+
     <div class="plate wide" id="h1"><picture>
       <source media="(max-width:819px)" srcset="img/p6-stand-720.webp">
-      <img src="img/p6-stand.webp" alt="A 1948 California drive-thru hamburger stand at dusk under two crossed palm trees." decoding="async">
-    </picture></div>
+      <img src="img/p6-stand.webp" alt="A 1948 California drive-thru hamburger stand at dusk under crossed palm trees." decoding="async"></picture></div>
 
-    <div class="plate" id="h2"><canvas id="seqA" aria-label="A gloved hand holding a ball of raw ground beef above a heating flat top."></canvas></div>
-
+    <div class="plate" id="h2"><canvas id="seqA" aria-label="A gloved hand holding raw ground beef above a heating flat top."></canvas></div>
     <div class="plate" id="h3"><canvas id="seqB" aria-label="The patty pressed onto the flat top, searing."></canvas></div>
 
     <div class="plate" id="h4"><picture>
-      <source media="(max-width:819px)" srcset="img/p4-onion-720.webp">
-      <img src="img/p4-onion.webp" alt="A thick slice of onion caramelising on the flat top." decoding="async">
-    </picture></div>
+      <source media="(max-width:819px)" srcset="img/k1-griddle-720.webp">
+      <img src="img/k1-griddle.webp" alt="Four patties searing at once on the flat top." decoding="async"></picture></div>
 
     <div class="plate" id="h5"><picture>
-      <source media="(max-width:819px)" srcset="img/p3-potato-720.webp">
-      <img src="img/p3-potato.webp" alt="Whole potatoes beside a hand-crank cutter, fresh fries falling through the blade." decoding="async">
-    </picture></div>
+      <source media="(max-width:819px)" srcset="img/i1-beef-720.webp">
+      <img src="img/i1-beef.webp" alt="A puck of freshly ground beef on butcher paper." decoding="async"></picture></div>
 
     <div class="plate" id="h6"><picture>
-      <source media="(max-width:819px)" srcset="img/k2-basket-720.webp">
-      <img src="img/k2-basket.webp" alt="A fry basket lifting out of the oil, fries steaming." decoding="async">
-    </picture></div>
+      <source media="(max-width:819px)" srcset="img/i2-bun-720.webp">
+      <img src="img/i2-bun.webp" alt="A freshly baked bun, backlit." decoding="async"></picture></div>
 
     <div class="plate" id="h7"><picture>
+      <source media="(max-width:819px)" srcset="img/p3-potato-720.webp">
+      <img src="img/p3-potato.webp" alt="Whole potatoes and a hand-crank cutter, fries falling." decoding="async"></picture></div>
+
+    <div class="plate" id="h8"><picture>
+      <source media="(max-width:819px)" srcset="img/k2-basket-720.webp">
+      <img src="img/k2-basket.webp" alt="A fry basket lifting out of the oil." decoding="async"></picture></div>
+
+    <div class="plate" id="h9"><picture>
+      <source media="(max-width:819px)" srcset="img/p4-onion-720.webp">
+      <img src="img/p4-onion.webp" alt="A slice of onion caramelising on the flat top." decoding="async"></picture></div>
+
+    <div class="plate" id="h10"><img src="img/t4-cheese.webp" alt="American cheese melting in long strands." decoding="async"></div>
+    <div class="plate" id="h11"><img src="img/t5-spread.webp" alt="A swipe of spread." decoding="async"></div>
+
+    <div class="plate" id="h12"><canvas id="seqC" aria-label="The burger assembling itself layer by layer."></canvas></div>
+
+    <div class="plate" id="h13"><picture>
       <source media="(max-width:819px)" srcset="img/p1-double-720.webp">
-      <img src="img/p1-double.webp" alt="A finished Double-Double on a dark plate." decoding="async">
-    </picture></div>
+      <img src="img/p1-double.webp" alt="A finished Double-Double on a dark plate." decoding="async"></picture></div>
 
     <div class="scrim" aria-hidden="true"></div>
     <div class="scrim low" aria-hidden="true"></div>
 
-    <!-- les sept mots du hero -->
-    <div class="blk" id="w1">
-      <p class="eyebrow">Baldwin Park, California · 1948</p>
-      <h2>A hundred<br>square feet</h2>
-      <p>Harry Snyder opens California's first drive-thru hamburger stand at Francisquito and Garvey. Every day before dawn he picks the meat and produce himself.</p>
-    </div>
+    <div class="blk" id="w1"><p class="eyebrow">Baldwin Park · 1948</p>
+      <h2>A hundred<br>square feet</h2><p>The first drive-thru in California.</p></div>
+    <div class="blk" id="w2"><p class="eyebrow">Held cold</p>
+      <h2>Nothing<br>is frozen</h2><p>No freezer in any store.</p></div>
+    <div class="blk" id="w3"><p class="eyebrow">Pressed to order</p>
+      <h2>Nothing<br>waits</h2><p>It cooks once you have asked.</p></div>
+    <div class="blk" id="w4"><p class="eyebrow">Flat top · 230&deg;</p>
+      <h2>All at<br>once</h2><p>Never before. Never for later.</p></div>
+    <div class="blk" id="w5"><p class="eyebrow">100% American beef</p>
+      <h2>Ground<br>fresh</h2><p>From their own facilities.</p></div>
+    <div class="blk" id="w6"><p class="eyebrow">Sponge dough</p>
+      <h2>Baked this<br>morning</h2><p>Toasted for every order.</p></div>
+    <div class="blk" id="w7"><p class="eyebrow">Whole potatoes, a hand crank</p>
+      <h2>Cut in<br>the store</h2><p>Nothing between field and fryer.</p></div>
+    <div class="blk" id="w8"><p class="eyebrow">Out of the oil</p>
+      <h2>Never<br>held</h2><p>No heat lamp in the building.</p></div>
+    <div class="blk" id="w9"><p class="eyebrow">Created in 1961, by customers</p>
+      <h2><em>Animal</em><br>Style</h2><p>Mustard cooked, grilled onions.</p></div>
+    <div class="blk" id="w10"><p class="eyebrow">Real American</p>
+      <h2>Melted<br>on</h2><p>The moment it leaves the steel.</p></div>
+    <div class="blk" id="w11"><p class="eyebrow">The one thing they never sell</p>
+      <h2>Their<br>spread</h2><p>Extra, if you ask for it.</p></div>
+    <div class="blk" id="w12"><p class="eyebrow">Layer by layer</p>
+      <h2>Built in<br>four minutes</h2><p>While you wait in the car.</p></div>
+    <div class="blk" id="w13"><p class="eyebrow">Six lines on the menu</p>
+      <h2>Made when<br>you order it</h2><p>Nothing on it was waiting.</p></div>
 
-    <div class="blk" id="w2">
-      <p class="eyebrow">Held cold until the moment it cooks</p>
-      <h2>Nothing<br>is frozen</h2>
-      <div class="specs">
-        <div><u>Beef</u><b>Fresh, never frozen</b></div>
-        <div><u>Freezers in store</u><b>None</b></div>
-        <div><u>Heat lamps</u><b>None</b></div>
-        <div><u>Microwaves</u><b>None</b></div>
-      </div>
-    </div>
-
-    <div class="blk" id="w3">
-      <p class="eyebrow">Pressed to order, on a 230° flat top</p>
-      <h2>Nothing<br>waits</h2>
-      <p class="cite">"In a world where food is often over-processed, prepackaged and frozen, In-N-Out makes everything the old fashioned way."<br>— in-n-out.com, in a meta tag nobody reads.</p>
-    </div>
-
-    <div class="blk" id="w4">
-      <p class="eyebrow">Created in 1961, by customers</p>
-      <h2><em>Animal</em><br>Style</h2>
-      <p>"Burger of your choice with hand-leafed lettuce, tomato, a mustard cooked beef patty; add pickle, extra spread with grilled onions."</p>
-    </div>
-
-    <div class="blk" id="w5">
-      <p class="eyebrow">Whole potatoes, a hand crank</p>
-      <h2>Cut in<br>the store</h2>
-      <p>That is the entire process. There is no bag, no supplier and no freezer between the field and the fryer.</p>
-    </div>
-
-    <div class="blk" id="w6">
-      <p class="eyebrow">Out of the oil, onto the tray</p>
-      <h2>Never<br>held</h2>
-      <p>No heat lamp anywhere in the building. What comes out of the fryer goes straight to you, or it does not go at all.</p>
-    </div>
-
-    <div class="blk" id="w7">
-      <p class="eyebrow">Four minutes after you said it</p>
-      <h2>Made when<br>you order it</h2>
-      <p>Six lines on the menu. Everything on them is built the moment you ask for it, and nothing on them was waiting.</p>
-    </div>
-
-    <p class="exit" id="exit">Now build your own<b>Keep scrolling &darr;</b></p>
-
-    <!-- ================= LES SECTIONS ================= -->
-
-    <!-- 01 · BUILD -->
-    <section class="pan" id="s1" data-outil aria-label="Build yours">
-      <div class="hd"><h2><span>01 /</span> Build yours</h2><span class="mono">Not so secret</span></div>
-      <div class="body"><div class="wrap">
-        <div class="stack" id="stack" aria-live="polite"></div>
-        <div class="panel">
-          <div class="opts" id="opts" role="group" aria-label="Not so secret menu"></div>
-          <p class="desc" id="desc"></p>
-        </div>
-      </div></div>
-      <p class="mono" style="color:var(--muted);flex:0 0 auto">Scroll assembles it · Tap changes it · Nothing is ordered</p>
-    </section>
-
-    <!-- 02 · THE MENU -->
-    <section class="pan" id="s2" aria-label="The menu">
-      <div class="hd"><h2><span>02 /</span> The menu</h2><span class="mono">Six lines, three burgers</span></div>
-      <div class="body"><div class="cards">
-        <article class="card">
-          <img src="img/c1-hamburger.webp" alt="Hamburger" decoding="async">
-          <div class="tx"><h3>Hamburger</h3>
-            <p>One 100% American beef patty, hand-leafed lettuce, tomato and spread on a freshly baked bun.</p></div>
-        </article>
-        <article class="card">
-          <img src="img/c2-cheeseburger.webp" alt="Cheeseburger" decoding="async">
-          <div class="tx"><h3>Cheeseburger</h3>
-            <p>One patty, one slice of American cheese, hand-leafed lettuce, tomato and spread.</p></div>
-        </article>
-        <article class="card">
-          <img src="img/c3-double.webp" alt="Double-Double" decoding="async">
-          <div class="tx"><h3>Double-Double<sup>®</sup></h3>
-            <p>Two 100% American beef patties, two slices of American cheese, stacked high on a freshly baked bun.</p></div>
-        </article>
-      </div></div>
-    </section>
-
-    <!-- 03 · THE CUT -->
-    <section class="pan" id="s3" aria-label="The cut">
-      <div class="hd"><h2><span>03 /</span> The cut</h2><span class="mono">Six parts</span></div>
-      <div class="body"><div class="rail">
-        <article class="ing"><img src="img/i1-beef.webp" alt="Fresh ground beef" decoding="async">
-          <div class="tx"><span class="n">01</span><h3>Fresh-ground beef</h3><p>100% American beef, ground fresh. Never frozen, from their own patty facilities.</p></div></article>
-        <article class="ing"><img src="img/i2-bun.webp" alt="Baked bun" decoding="async">
-          <div class="tx"><span class="n">02</span><h3>Freshly baked bun</h3><p>Old-fashioned sponge dough, baked and toasted for every order.</p></div></article>
-        <article class="ing"><img src="img/t4-cheese.webp" alt="American cheese" decoding="async">
-          <div class="tx"><span class="n">03</span><h3>American cheese</h3><p>Melted on the patty the moment it leaves the flat top.</p></div></article>
-        <article class="ing"><img src="img/t5-spread.webp" alt="Spread" decoding="async">
-          <div class="tx"><span class="n">04</span><h3>Spread</h3><p>The sauce that makes it theirs. Extra spread is one of the not-so-secret orders.</p></div></article>
-        <article class="ing"><img src="img/t3-pickle.webp" alt="Pickle" decoding="async">
-          <div class="tx"><span class="n">05</span><h3>Pickle</h3><p>Added on request. Part of Animal Style since 1961.</p></div></article>
-        <article class="ing"><img src="img/i3-potato.webp" alt="Potatoes" decoding="async">
-          <div class="tx"><span class="n">06</span><h3>Whole potatoes</h3><p>Cut in the store, on the spot. Nothing between the field and the fryer.</p></div></article>
-      </div></div>
-    </section>
-
-    <!-- 04 · 1948 -->
-    <section class="pan" id="s4" aria-label="Since 1948">
-      <div class="hd"><h2><span>04 /</span> Since 1948</h2><span class="mono">Same arrow</span></div>
-      <div class="body">
-        <div class="nums">
-          <div><b>100</b><u>Square feet</u></div>
-          <div><b>6</b><u>Menu lines</u></div>
-          <div><b>0</b><u>Freezers</u></div>
-          <div><b>1954</b><u>The arrow</u></div>
-        </div>
-        <div class="arch">
-          <article class="ar"><img src="img/a1-stand.webp" alt="The first stand" decoding="async">
-            <div class="tx"><h3>Where it began</h3><p>A space barely one hundred square feet, at Francisquito and Garvey.</p></div></article>
-          <article class="ar"><img src="img/a2-speaker.webp" alt="The two-way speaker box" decoding="async">
-            <div class="tx"><h3>The speaker box</h3><p>Built at night in his garage, so guests could order without leaving the car.</p></div></article>
-          <article class="ar"><img src="img/a3-market.webp" alt="The pre-dawn market" decoding="async">
-            <div class="tx"><h3>Before dawn</h3><p>Every day, Harry picked the meat and produce himself.</p></div></article>
-          <article class="ar"><img src="img/a4-line.webp" alt="The line of cars" decoding="async">
-            <div class="tx"><h3>Under the arrow</h3><p>1954. The arrow replaces the "No Delay" sign. It points to pride.</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- 05 · LE REGISTRE -->
-    <section class="ledger" id="find" aria-label="The record">
-      <div class="cols">
-        <div><h3>Menu</h3><ul>
-          <li><a href="https://www.in-n-out.com/menu">The six lines</a></li>
-          <li><a href="https://www.in-n-out.com/menu/not-so-secret-menu">Not so secret menu</a></li></ul></div>
-        <div><h3>Company</h3><ul>
-          <li><a href="https://www.in-n-out.com/history">Since 1948</a></li>
-          <li><a href="https://www.in-n-out.com/locations">Locations</a></li></ul></div>
-        <div><h3>Origin</h3><ul><li>Baldwin Park, CA</li><li>Harry &amp; Esther Snyder</li></ul></div>
-        <div><h3>The arrow</h3><ul><li>1954</li><li>"It points to pride"</li></ul></div>
-      </div>
-      <div class="mark"><p>We all work under the same arrow.</p></div>
-      <p class="legal">Unsolicited concept redesign, not affiliated with or endorsed by In-N-Out Burgers. Every figure, quotation and menu description is taken verbatim from in-n-out.com. Concept and build: Dondi Santeme, TheWebDesigner.</p>
-    </section>
+    <p class="exit" id="exit">That is the whole argument<b>Now build yours &darr;</b></p>
 
     <div class="vign" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
   </div>
 </section>
+
+<!-- ================= APRES LE HERO : FLUX NORMAL, AUCUN SCRUB ================= -->
+<main>
+
+  <section class="sec" id="build" data-outil aria-label="Build yours">
+    <div class="hd"><h2><span>01 /</span> Build yours</h2><span class="mono">Not so secret</span></div>
+    <p class="lede">Their own words. Nothing here is secret, and nothing here is ordered.</p>
+    <div class="wrap">
+      <div class="stack" id="stack" aria-live="polite"></div>
+      <div class="panel">
+        <div class="opts" id="opts" role="group" aria-label="Not so secret menu"></div>
+        <p class="readout"><span>Patties &times; cheese</span><b id="ro">2 &times; 2</b></p>
+        <p class="desc" id="desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="menu" aria-label="The menu">
+    <div class="hd"><h2><span>02 /</span> Their burgers</h2><span class="mono">Six lines total</span></div>
+    <p class="lede">Three burgers, and the difference between them is one patty and one slice.</p>
+    <div class="cards">
+      <article class="card"><img src="img/c1-hamburger.webp" alt="Hamburger" loading="lazy" decoding="async">
+        <div class="tx"><h3>Hamburger</h3><p>One patty, hand-leafed lettuce, tomato, spread.</p></div></article>
+      <article class="card"><img src="img/c2-cheeseburger.webp" alt="Cheeseburger" loading="lazy" decoding="async">
+        <div class="tx"><h3>Cheeseburger</h3><p>One patty, one slice of American cheese.</p></div></article>
+      <article class="card"><img src="img/c3-double.webp" alt="Double-Double" loading="lazy" decoding="async">
+        <div class="tx"><h3>Double-Double<sup>&reg;</sup></h3><p>Two patties, two slices, stacked high.</p></div></article>
+    </div>
+  </section>
+
+  <section class="sec" id="since" aria-label="Since 1948">
+    <div class="hd"><h2><span>03 /</span> Since 1948</h2><span class="mono">Same arrow</span></div>
+    <p class="lede">Harry Snyder built the speaker box in his garage so you would not have to leave the car.</p>
+    <p class="tally">A hundred square feet. Six lines on the menu. Zero freezers.
+      One arrow, <em>since 1954</em>.</p>
+    <div class="arch">
+      <article class="ar"><img src="img/a1-stand.webp" alt="The first stand" loading="lazy" decoding="async">
+        <div class="tx"><h3>Where it began</h3><p>Francisquito and Garvey.</p></div></article>
+      <article class="ar"><img src="img/a2-speaker.webp" alt="The speaker box" loading="lazy" decoding="async">
+        <div class="tx"><h3>The speaker box</h3><p>Built at night, in his garage.</p></div></article>
+      <article class="ar"><img src="img/a3-market.webp" alt="The market" loading="lazy" decoding="async">
+        <div class="tx"><h3>Before dawn</h3><p>He picked the produce himself.</p></div></article>
+      <article class="ar"><img src="img/a4-line.webp" alt="The line of cars" loading="lazy" decoding="async">
+        <div class="tx"><h3>Under the arrow</h3><p>1954. It points to pride.</p></div></article>
+    </div>
+  </section>
+
+  <section class="ledger" id="find" aria-label="The record">
+    <div class="cols">
+      <div><h3>Menu</h3><ul>
+        <li><a href="https://www.in-n-out.com/menu">The six lines</a></li>
+        <li><a href="https://www.in-n-out.com/menu/not-so-secret-menu">Not so secret menu</a></li></ul></div>
+      <div><h3>Company</h3><ul>
+        <li><a href="https://www.in-n-out.com/history">Since 1948</a></li>
+        <li><a href="https://www.in-n-out.com/locations">Locations</a></li></ul></div>
+      <div><h3>Origin</h3><ul><li>Baldwin Park, CA</li><li>Harry &amp; Esther Snyder</li></ul></div>
+      <div><h3>The arrow</h3><ul><li>1954</li><li>"It points to pride"</li></ul></div>
+    </div>
+    <div class="mark"><p>We all work under the same arrow.</p></div>
+    <p class="legal">Unsolicited concept redesign, not affiliated with or endorsed by In-N-Out Burgers. Every figure, quotation and menu description is taken verbatim from in-n-out.com. Concept and build: Dondi Santeme, TheWebDesigner.</p>
+  </section>
+
+</main>
+
+<div class="grain" aria-hidden="true"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
@@ -492,7 +447,10 @@ const seg=(p,a,b)=>Math.max(0,Math.min(1,(p-a)/(b-a)));
 const lerp=(a,b,t)=>a+(b-a)*t;
 const MOB=innerWidth<820;
 
-/* ================= L OUTIL : le vrai menu secret d In-N-Out ================= */
+/* ======== L OUTIL. Il ne repond plus au scroll, seulement au doigt. ========
+   Les couches restent MONTEES ; celles qui changent tombent en place avec un
+   retard propre a chacune et une legere bascule. Le desassemblage cinematique,
+   lui, est dans le hero, en vraie sequence generee, plus en tranches CSS. */
 const BAND={ bunTop:[0.040,0.155], cheese:[0.210,0.065], patty:[0.275,0.090],
              onion:[0.515,0.080], tomato:[0.590,0.055], lettuce:[0.640,0.100],
              spread:[0.745,0.060], bunBot:[0.805,0.105] };
@@ -504,35 +462,28 @@ const MENU=[
  {k:'ha', n:'Hamburger', img:'img/t6-tomato.webp', patty:1, cheese:0,
   d:'One 100% American beef patty, hand-leafed lettuce, tomato and spread on a freshly baked bun. No cheese.'},
  {k:'3x3', n:'3×3®', img:'img/t5-spread.webp', patty:3, cheese:3,
-  d:'Our 3×3® or Triple Triple® has three 100% American beef patties, hand-leafed lettuce, tomato, spread, three slices of American cheese, with or without onions, stacked high on a freshly baked bun.'},
+  d:'Three 100% American beef patties, hand-leafed lettuce, tomato, spread, three slices of American cheese, stacked high on a freshly baked bun.'},
  {k:'4x4', n:'4×4®', img:'img/i1-beef.webp', patty:4, cheese:4,
-  d:'Our 4×4®, Four by Four® or Quad Quad® has four 100% American beef patties, hand-leafed lettuce, tomato, spread, four slices of American cheese, with or without onions, stacked high on a freshly baked bun.'},
+  d:'Four 100% American beef patties, hand-leafed lettuce, tomato, spread, four slices of American cheese, stacked high on a freshly baked bun.'},
  {k:'gc', n:'Grilled Cheese', img:'img/i2-bun.webp', patty:0, cheese:2,
   d:'Two slices of melted American cheese, hand-leafed lettuce, tomato, spread with or without onions on a freshly baked bun. No patty at all.'}
 ];
 const MODS=[
  {k:'animal', n:'Animal Style®', img:'img/t1-onion.webp',
-  d:'Burger of your choice with hand-leafed lettuce, tomato, a mustard cooked beef patty; add pickle, extra spread with grilled onions.'},
+  d:'Hand-leafed lettuce, tomato, a mustard cooked beef patty; add pickle, extra spread with grilled onions.'},
  {k:'protein', n:'Protein Style®', img:'img/t3-pickle.webp',
   d:'Your favorite burger wrapped in hand-leafed lettuce instead of a bun.'}
 ];
 let pick='dd', mods={animal:false,protein:false};
-const stack=document.getElementById('stack'), opts=document.getElementById('opts'), desc=document.getElementById('desc');
+const stack=document.getElementById('stack'), opts=document.getElementById('opts'),
+      desc=document.getElementById('desc'), ro=document.getElementById('ro');
 
-/* LE SCRUB D ASSEMBLAGE : le SCROLL referme, le DOIGT choisit. */
-let ovMax=0.012, ovK=0;
-const GAP=0.024;
-function applyOv(){
-  stack.style.setProperty('--ov',(ovMax*ovK - GAP*(1-ovK)).toFixed(4));
-  const ly=stack.children, n=ly.length;
-  for(let i=0;i<n;i++){
-    const retard=i/Math.max(1,n-1)*0.35;
-    const k=Math.max(0,Math.min(1,(ovK-retard)/(1-retard||1)));
-    ly[i].style.transform='translate3d(0,'+((1-k)*(-5-i*1.5)).toFixed(2)+'vh,0)';
-  }
-}
-function layer(name){ const b=BAND[name], d=document.createElement('div');
-  d.className='ly'; d.style.setProperty('--y',b[0]); d.style.setProperty('--h',b[1]); return d; }
+function layer(name,i){ const b=BAND[name], d=document.createElement('div');
+  d.className='ly'; d.style.setProperty('--y',b[0]); d.style.setProperty('--h',b[1]);
+  /* elle arrive d en haut, legerement basculee, et se pose avec son propre retard */
+  d.style.setProperty('--tilt',(i%2?2.4:-2.4)+'deg');
+  d.style.setProperty('--lag',(i*0.055).toFixed(3)+'s');
+  return d; }
 function buildStack(){
   const m=MENU.find(x=>x.k===pick), s=[];
   s.push(mods.protein?'lettuce':'bunTop');
@@ -540,16 +491,15 @@ function buildStack(){
   if(mods.animal) s.push('onion');
   s.push('tomato','lettuce','spread');
   s.push(mods.protein?'lettuce':'bunBot');
-  stack.textContent=''; s.forEach(n=>stack.appendChild(layer(n)));
-  ovMax=0.012+0.006*Math.max(0,s.length-8);
-  applyOv();
+  stack.textContent='';
+  s.forEach((n,i)=>stack.appendChild(layer(n,i)));
+  ro.innerHTML=m.patty+' &times; '+m.cheese;
   let t='<b>'+m.n+'.</b> '+m.d;
   MODS.forEach(x=>{ if(mods[x.k]) t+=' <b>'+x.n+'.</b> '+x.d; });
   desc.innerHTML=t;
-  return m;
 }
 function chip(o,pressed,onClick){ const b=document.createElement('button'); b.type='button';
-  b.innerHTML='<img src="'+o.img+'" alt="" decoding="async"><span>'+o.n+'</span>';
+  b.innerHTML='<img src="'+o.img+'" alt="" loading="lazy" decoding="async"><span>'+o.n+'</span>';
   b.setAttribute('aria-pressed',pressed?'true':'false');
   b.addEventListener('click',onClick); return b; }
 MENU.forEach(m=>opts.appendChild(chip(m,m.k===pick,()=>{ pick=m.k; sync(); })));
@@ -558,10 +508,9 @@ function sync(){ const bs=opts.children;
   for(let i=0;i<bs.length;i++){ const el=bs[i];
     if(el.dataset.mod) el.setAttribute('aria-pressed', mods[el.dataset.mod]?'true':'false');
     else el.setAttribute('aria-pressed', MENU[i].k===pick?'true':'false'); }
-  const m=buildStack();
-  if(curSec===0){ gLab.textContent='Patties × cheese'; gVal.textContent=m.patty+'×'+m.cheese; } }
+  buildStack(); }
 
-/* ================= LES DEUX SEQUENCES WEBP, jamais un mp4 ================= */
+/* ======== LES TROIS SEQUENCES WEBP DU HERO, jamais un mp4 ======== */
 function sequence(id, dir, n){
   const imgs=[]; let first=false;
   const cv=document.getElementById(id), cx=cv.getContext('2d');
@@ -580,94 +529,61 @@ function sequence(id, dir, n){
 }
 const A=sequence('seqA', MOB?'img/h-smash-720/':'img/h-smash-1280/', 47);
 const B=sequence('seqB', MOB?'img/p2-smash-720/':'img/p2-smash-1280/', 54);
+const C=sequence('seqC', MOB?'img/b-build-720/':'img/b-build-1280/', 37);
 
-/* ================= LE FILM =================
-   LE HERO tient de 0 a 0.545, soit huit ecrans sur quinze : sept plans qui se
-   relaient sans jamais quitter la scene. Chaque plan monte par le bas et pousse
-   le precedent vers le haut. Aucun fondu, aucune apparition : c est un
-   defilement d assets, pas une succession de sections. */
-const H=[1,2,3,4,5,6,7].map(i=>document.getElementById('h'+i));
-const W=[1,2,3,4,5,6,7].map(i=>document.getElementById('w'+i));
-const BEAT=[0.000,0.075,0.185,0.285,0.350,0.410,0.470];
-const HERO_END=0.545;
-const S=[1,2,3,4].map(i=>document.getElementById('s'+i));
-const ledger=document.getElementById('find'), exitTip=document.getElementById('exit');
+/* ======== LE HERO : TREIZE PLANS SUR UNE SEULE TETE DE LECTURE ======== */
+const N=13;
+const H=[],W=[];
+for(let i=1;i<=N;i++){ H.push(document.getElementById('h'+i)); W.push(document.getElementById('w'+i)); }
+/* debut de chaque battement, en fraction du hero */
+const BEAT=[0.000,0.070,0.170,0.262,0.330,0.392,0.452,0.514,0.576,0.640,0.700,0.762,0.882];
+const END=0.960;
+const exitTip=document.getElementById('exit');
 const put=(el,y,extra)=>{ el.style.transform='translate3d(0,'+y+'vh,0)'+(extra||''); };
 const rFill=document.getElementById('rFill'), rKnob=document.getElementById('rKnob'),
-      fLeft=document.getElementById('fLeft'), fFrm=document.getElementById('fFrm'),
+      fLeft=document.getElementById('fLeft'),
       gLab=document.getElementById('gLab'), gVal=document.getElementById('gVal'), gFill=document.getElementById('gFill'),
-      rec=document.getElementById('rec'), nav=document.getElementById('nav');
-
-/* QUATRE entrees dans la barre du haut, pas dix. Le hero n en est pas une :
-   on n a pas besoin d un lien vers l endroit d ou on part. */
-const SEC=[[0.545,'Build','Patties × cheese','2×2'],
-           [0.700,'Menu','On the menu','3'],
-           [0.790,'The cut','Parts','6'],
-           [0.870,'1948','Established','1948'],
-           [0.940,'Find','Under one','ARROW']];
-SEC.slice(0,4).forEach(function(c){ const a=document.createElement('a'); a.href='#';
-  a.textContent=c[1];
-  a.addEventListener('click',function(e){ e.preventDefault();
-    const HH=document.documentElement.scrollHeight-innerHeight, y=HH*(c[0]+0.02);
-    if(lenis) lenis.scrollTo(y); else scrollTo(0,y); });
-  nav.appendChild(a); });
+      rec=document.getElementById('rec');
+/* etiquette et valeur du compteur, un par battement */
+const CNT=[['Square feet','100'],['Freezers','0'],['Flat top','—'],['At once','4'],
+           ['Blend','80/20'],['Dough','Sponge'],['Suppliers','0'],['Heat lamps','0'],
+           ['Created','1961'],['Slices','2'],['Recipe','1948'],['Minutes','4'],['Menu lines','6']];
 const tc=v=>{ const f=Math.round(v*1000), s=Math.floor(f/25);
   return 'REC 00:'+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+':'+String(f%25).padStart(2,'0'); };
-let curSec=-1, curBeat=-1;
+let cur=-1;
 
 function render(p){
-  /* ---- LE HERO : chaque plan monte, le precedent recule et sort par le haut ---- */
-  for(let i=0;i<7;i++){
-    const a=BEAT[i], b=(i<6?BEAT[i+1]:HERO_END);
-    const entree=(i===0)?1:seg(p,a-0.045,a+0.012);
-    const sortie=seg(p,b-0.012,b+0.045);
-    /* la profondeur fait la continuite : le plan qui arrive se pose en reculant */
-    put(H[i], lerp(104,0,entree)+lerp(0,-104,sortie), ' scale('+lerp(1.06,1,entree).toFixed(3)+')');
-    put(W[i], lerp(116,0,seg(p,a-0.038,a+0.016))+lerp(0,-116,seg(p,b-0.016,b+0.038)));
+  /* R3 · recouvrement. En plein ecran, un plan ne GLISSE pas : il se DECOUVRE.
+     Chaque plan est revele du bas vers le haut par-dessus le precedent, qui reste
+     en place dessous. Aucun fondu, aucune coupure, aucune moitie d ecran vide. */
+  for(let i=0;i<N;i++){
+    const a=BEAT[i], b=(i<N-1?BEAT[i+1]:END);
+    const entree=(i===0)?1:seg(p,a-0.048,a+0.006);
+    H[i].style.clipPath='inset('+((1-entree)*100).toFixed(2)+'% 0 0 0)';
+    /* le plan qui arrive se pose en reculant : c est la profondeur qui fait la continuite */
+    H[i].style.transform='scale('+lerp(1.07,1,entree).toFixed(3)+')';
+    /* le mot sortant a quitte le cadre juste avant que le suivant entre : jamais
+       deux mots au centre, et jamais d ecran sans mot entre deux battements. */
+    const wIn=(i===0)?1:seg(p,a-0.012,a+0.018);
+    put(W[i], lerp(116,0,wIn)+lerp(0,-116,seg(p,b-0.032,b-0.008)));
   }
-  /* les deux sequences sont scrubbees pendant leur battement */
-  A.draw(seg(p,0.080,0.180));
-  B.draw(seg(p,0.190,0.282));
-  /* l invitation a sortir du hero, sur le dernier battement seulement */
-  put(exitTip, lerp(60,0,seg(p,0.490,0.515))+lerp(0,-140,seg(p,0.535,0.565)));
+  /* les trois sequences, scrubbees chacune pendant son battement */
+  A.draw(seg(p,0.074,0.166));
+  B.draw(seg(p,0.174,0.258));
+  C.draw(seg(p,0.766,0.878));
+  put(exitTip, lerp(60,0,seg(p,0.905,0.930))+lerp(0,-150,seg(p,0.965,0.995)));
 
-  /* ---- LES SECTIONS : elles montent par-dessus, sans fondu ---- */
-  put(S[0], lerp(102,0,seg(p,0.520,0.575))+lerp(0,-102,seg(p,0.686,0.722)));
-  put(S[1], lerp(102,0,seg(p,0.684,0.724))+lerp(0,-102,seg(p,0.776,0.812)));
-  put(S[2], lerp(102,0,seg(p,0.774,0.814))+lerp(0,-102,seg(p,0.856,0.892)));
-  put(S[3], lerp(102,0,seg(p,0.854,0.894))+lerp(0,-102,seg(p,0.926,0.958)));
-  /* LE SCRUB D ASSEMBLAGE dans la section 01 */
-  ovK=seg(p,0.585,0.665); applyOv();
-  document.documentElement.style.setProperty('--grain-opacity',(0.055+seg(p,0.905,0.950)*0.19).toFixed(3));
-  put(ledger, lerp(102,0,seg(p,0.930,0.975)));
-
-  /* ---- L HABILLAGE, sur la MEME tete de lecture ---- */
   rFill.style.width=(p*100).toFixed(2)+'%';
   rKnob.style.left='calc('+(p*100).toFixed(2)+'% - '+(p*11).toFixed(1)+'px)';
   rec.textContent=tc(p);
-  fFrm.textContent='Frame '+String(Math.round(p*1000)).padStart(4,'0')+' / 1000';
+  gFill.style.height=(p*100).toFixed(1)+'%';
 
-  if(p<HERO_END){
-    let bt=0; for(let i=0;i<7;i++){ if(p>=BEAT[i]) bt=i; }
-    if(bt!==curBeat||curSec!==-1){ curBeat=bt; curSec=-1;
-      fLeft.textContent='Hero · '+String(bt+1).padStart(2,'0')+' / 07';
-      const as=nav.children; for(let i=0;i<as.length;i++) as[i].setAttribute('aria-current','false'); }
-    if(bt===0){ gLab.textContent='Square feet'; gVal.textContent='100'; }
-    else if(bt===1){ gLab.textContent='Freezers'; gVal.textContent='0'; }
-    else if(bt===2){ gLab.textContent='Flat top'; gVal.textContent=Math.round(lerp(70,375,seg(p,0.185,0.285)))+'°'; }
-    else if(bt===3){ gLab.textContent='Created'; gVal.textContent='1961'; }
-    else if(bt===4){ gLab.textContent='Suppliers'; gVal.textContent='0'; }
-    else if(bt===5){ gLab.textContent='Heat lamps'; gVal.textContent='0'; }
-    else { gLab.textContent='Menu lines'; gVal.textContent='6'; }
-    gFill.style.height=(p/HERO_END*100).toFixed(1)+'%';
-  } else {
-    let k=0; for(let i=0;i<SEC.length;i++){ if(p>=SEC[i][0]) k=i; }
-    if(k!==curSec){ curSec=k; curBeat=-1;
-      fLeft.textContent=String(k+1).padStart(2,'0')+' · '+SEC[k][1];
-      const as=nav.children; for(let i=0;i<as.length;i++) as[i].setAttribute('aria-current', i===k?'true':'false');
-      if(k===0){ sync(); } else { gLab.textContent=SEC[k][2]; gVal.textContent=SEC[k][3]; } }
-    gFill.style.height='100%';
-  }
+  let k=0; for(let i=0;i<N;i++){ if(p>=BEAT[i]) k=i; }
+  if(k!==cur){ cur=k;
+    fLeft.textContent='Hero · '+String(k+1).padStart(2,'0')+' / '+N;
+    gLab.textContent=CNT[k][0]; gVal.textContent=CNT[k][1]; }
+  /* le seul compteur qui bouge en continu : la plaque qui chauffe */
+  if(k===2){ gVal.textContent=Math.round(lerp(70,375,seg(p,0.170,0.262)))+'°'; }
 }
 
 let lenis=null;
@@ -678,15 +594,16 @@ if(!REDUCED&&window.Lenis){ lenis=new Lenis({lerp:0.08});
   gsap.ticker.lagSmoothing(0); }
 window.captureMode=function(){ if(lenis&&lenis.destroy){lenis.destroy();lenis=null;} ScrollTrigger.refresh(); };
 
+/* UN SEUL scrub, UN SEUL pin, et il s arrete a la fin du hero.
+   Tout ce qui suit est du document normal. */
 const FRAMES=1000, playhead={f:0};
-const film=gsap.timeline({ scrollTrigger:{ trigger:'#spacer', start:'top top', end:'bottom bottom',
-  scrub:true, pin:'.stage', anticipatePin:1 }, defaults:{ease:'none'} });
+const film=gsap.timeline({ scrollTrigger:{ trigger:'#hero', start:'top top', end:'bottom bottom',
+  scrub:true, pin:'.stage', pinSpacing:false, anticipatePin:1 }, defaults:{ease:'none'} });
 film.to(playhead,{ f:FRAMES-1, duration:1, onUpdate:function(){ render(playhead.f/(FRAMES-1)); } },0);
 BEAT.forEach(function(b,i){ film.addLabel('beat'+(i+1), b); });
-SEC.forEach(function(c,i){ film.addLabel('sec'+(i+1), c[0]); });
 
-window.addEventListener('resize',function(){ A.size(); B.size(); ScrollTrigger.refresh(); });
-A.size(); B.size(); buildStack(); render(0);
+window.addEventListener('resize',function(){ A.size(); B.size(); C.size(); ScrollTrigger.refresh(); });
+A.size(); B.size(); C.size(); buildStack(); render(0);
 })();
 </script>
 </body>
