@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>In-N-Out · Nothing waits</title>
+<meta name="description" content="In a world where food is often over-processed, prepackaged and frozen, In-N-Out makes everything the old fashioned way. This is that sentence, built." />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" />
+<style>
+:root{
+  /* fond : noir chaud, accorde au noir natif des plans generes */
+  --bg:#0B0705; --surface:#241A13; --text:#F7F2EA; --muted:#8C7F72; --line:#D8CDBE;
+  /* les deux fentes de couleur, PRELEVEES sur in-n-out.com le 2026-08-11 */
+  --accent:#FFCB05;   /* le jaune de la fleche, instrumentation, max 30% */
+  --signal:#B60000;   /* le rouge de marque, un seul moment, max 3% */
+  --font-display:'Inter', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-edito:'Instrument Serif', serif;
+  --font-mono:'Space Mono', monospace;
+  --step-hero: clamp(2.6rem, min(13vw, 11vh), 9rem);
+  --step-h2:   clamp(1.6rem, 5.4vw, 3.6rem);
+  --step-h3:   clamp(1.15rem, 3.4vw, 2rem);
+  --step-body: clamp(0.95rem, 2.9vw, 1.1rem);
+  --step-small:clamp(0.8rem, 2.4vw, 0.9rem);
+  --step-label:clamp(0.6rem, 2vw, 0.72rem);
+  --step-count:clamp(2.2rem, 9vw, 4.2rem);
+  --r-0:0; --r-1:4px; --r-pill:999px;
+  --t-fast:0.25s; --t-slow:0.75s;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --shadow:0 24px 48px rgba(0,0,0,0.55);
+  --grain-opacity:0.055;
+  /* la scene : une seule mesure pilote le cadrage sur telephone ET sur ordinateur */
+  --frame: min(86vw, 62vh);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:var(--step-body);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:clip}
+button{font:inherit;color:inherit}
+::selection{background:var(--signal);color:var(--text)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ============ ARCHITECTURE #33 : spacer long, tout le visible en fixed ============ */
+#spacer{position:relative;height:calc(100vh + 6200px)}
+.stage{position:relative;height:100vh;height:100dvh;min-height:560px;overflow:hidden;background:var(--bg)}
+
+/* ---- les plans. contain + centre : MEME cadrage sur telephone et sur ordinateur ---- */
+.plate{position:absolute;inset:0;z-index:1;display:grid;place-items:center;will-change:transform}
+.plate img,.plate canvas{width:var(--frame);height:calc(var(--frame)*1.34);object-fit:contain;display:block;
+  /* le bord de l image se fond dans le fond : aucun rectangle, aucun liseré de decoupe */
+  -webkit-mask-image:radial-gradient(ellipse 62% 60% at 50% 52%, #000 40%, transparent 96%);
+  mask-image:radial-gradient(ellipse 62% 60% at 50% 52%, #000 40%, transparent 96%)}
+/* le plan de lieu est un paysage : plus large, et son ciel garde un fondu plus doux */
+.plate.wide img{width:min(94vw,70vh*0.75);height:calc(min(94vw,70vh*0.75)*1.34);
+  -webkit-mask-image:radial-gradient(ellipse 74% 68% at 50% 56%, #000 52%, transparent 100%);
+  mask-image:radial-gradient(ellipse 74% 68% at 50% 56%, #000 52%, transparent 100%)}
+
+.grain{position:absolute;inset:0;z-index:52;pointer-events:none;opacity:var(--grain-opacity);mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='140' height='140' filter='url(%23g)'/></svg>")}
+.vign{position:absolute;inset:0;z-index:51;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 46%, rgba(11,7,5,0) 34%, rgba(11,7,5,0.8) 100%)}
+
+/* ============ L HABILLAGE, copie du SMASH ============ */
+.hud{position:fixed;inset:0;z-index:60;pointer-events:none;
+  padding:max(14px,env(safe-area-inset-top)) 14px 14px}
+.hud > *{position:absolute}
+.mono{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
+
+/* le reticule aux quatre coins */
+.ret{position:fixed;z-index:59;width:clamp(18px,4.4vw,34px);height:clamp(18px,4.4vw,34px);
+  border:1px solid var(--line);opacity:0.42;pointer-events:none}
+.ret.a{top:clamp(46px,7vh,64px);left:12px;border-right:0;border-bottom:0}
+.ret.b{top:clamp(46px,7vh,64px);right:12px;border-left:0;border-bottom:0}
+.ret.c{bottom:clamp(52px,8vh,70px);left:12px;border-right:0;border-top:0}
+.ret.d{bottom:clamp(52px,8vh,70px);right:12px;border-left:0;border-top:0}
+
+.brand{top:clamp(12px,2vh,20px);left:14px;display:flex;align-items:center;gap:0.6em;pointer-events:auto}
+.arrow{width:clamp(34px,8vw,52px);height:auto;color:var(--accent);display:block}
+.brand b{font-family:var(--font-display);font-weight:900;letter-spacing:-0.02em;font-size:var(--step-small)}
+
+/* le compteur 7 segments, en haut a droite */
+.count{top:clamp(10px,1.8vh,18px);right:14px;text-align:right}
+.count u{display:block;text-decoration:none;color:var(--muted);font-family:var(--font-mono);
+  font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
+.count b{display:block;font-family:var(--font-mono);font-weight:700;color:var(--accent);
+  font-size:var(--step-count);line-height:0.86;letter-spacing:-0.02em;
+  text-shadow:0 0 18px rgba(255,203,5,0.28)}
+
+/* la regle graduee, pleine largeur, en bas : la tete de lecture rendue visible */
+.ruler{left:0;right:0;bottom:max(10px,env(safe-area-inset-bottom));height:26px;pointer-events:none}
+.ruler i{position:absolute;left:14px;right:14px;top:11px;height:1px;background:var(--surface);display:block}
+.ruler s{position:absolute;left:14px;top:11px;height:1px;background:var(--accent);display:block;text-decoration:none}
+.ruler em{position:absolute;top:5px;width:13px;height:13px;border-radius:var(--r-pill);
+  background:var(--accent)}
+.ruler p{position:absolute;left:14px;bottom:-2px;color:var(--muted);font-family:var(--font-mono);
+  font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
+
+/* la bande de graduations verticale, bord droit */
+.ticks{right:5px;top:22vh;bottom:22vh;width:10px;
+  background:repeating-linear-gradient(to bottom,var(--surface) 0 1px,transparent 1px 11px)}
+.ticks em{position:absolute;right:0;width:10px;height:2px;background:var(--accent)}
+
+/* ============ LA TYPOGRAPHIE, au-dessus des plans ============ */
+/* un voile derriere le texte : le mot geant vit SUR l image sans devenir illisible */
+.scrim{position:absolute;left:0;right:0;top:0;height:64vh;z-index:19;pointer-events:none;
+  background:linear-gradient(to bottom, rgba(11,7,5,0.88) 0%, rgba(11,7,5,0.62) 46%, rgba(11,7,5,0) 100%)}
+.scrim.low{top:auto;bottom:0;height:52vh;
+  background:linear-gradient(to top, rgba(11,7,5,0.9) 0%, rgba(11,7,5,0.5) 52%, rgba(11,7,5,0) 100%)}
+.blk{position:absolute;z-index:20;left:14px;right:14px;will-change:transform;pointer-events:none}
+.eyebrow{color:var(--muted);font-family:var(--font-mono);font-size:var(--step-label);
+  letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.5em}
+.chap{font-family:var(--font-mono);font-size:var(--step-h3);font-weight:700;letter-spacing:0.02em;
+  text-transform:uppercase;margin-bottom:0.5em}
+.chap span{color:var(--accent)}
+.blk h2{font-family:var(--font-display);font-size:var(--step-hero);font-weight:900;line-height:0.86;
+  letter-spacing:-0.045em;text-transform:uppercase;text-wrap:balance}
+.blk h2 em{font-family:var(--font-edito);font-style:italic;font-weight:400;text-transform:none;
+  letter-spacing:-0.02em}
+.blk p{margin-top:0.9em;max-width:34ch;color:var(--line);font-family:var(--font-mono);
+  font-size:var(--step-small);line-height:1.7}
+.blk .cite{color:var(--muted)}
+#b1{top:16vh}#b2{top:16vh}#b3{top:15vh}#b4{bottom:16vh}#b6{top:18vh}
+
+/* ============ 05 · BUILD YOURS, l outil interactif ============ */
+.build{position:absolute;inset:0;z-index:26;background:var(--bg);will-change:transform;overflow:hidden;
+  display:grid;grid-template-rows:auto 1fr auto;gap:0.5em;
+  padding:clamp(76px,11vh,104px) 14px clamp(46px,7vh,60px)}
+.build .top{display:flex;align-items:baseline;justify-content:space-between;gap:1em}
+.build h2{font-family:var(--font-display);font-size:var(--step-h2);font-weight:900;line-height:0.9;
+  letter-spacing:-0.04em;text-transform:uppercase}
+.build .top .mono{color:var(--muted)}
+.wrap{display:grid;grid-template-columns:1fr;gap:clamp(8px,2vh,18px);min-height:0;align-items:center}
+
+/* la colonne du burger : une seule image, decoupee en bandes par background-position */
+.stack{--ih:min(44vh,72vw);--ov:0;display:flex;flex-direction:column;align-items:center;justify-self:center;
+  width:var(--ih)}
+.ly{width:100%;background-image:url('img/p5-eclate-720.webp');background-repeat:no-repeat;
+  background-size:100% var(--ih);mix-blend-mode:lighten;
+  height:calc(var(--ih)*var(--h));background-position:0 calc(var(--ih)*var(--y)*-1);
+  margin-top:calc(var(--ih)*var(--ov)*-1);
+  /* la garniture n occupe que le centre de l image source : on masque les bords,
+     sinon le fond de chaque bande dessine un rectangle visible sur ses voisines */
+  -webkit-mask-image:linear-gradient(to right, transparent 8%, #000 22%, #000 78%, transparent 92%);
+  mask-image:linear-gradient(to right, transparent 8%, #000 22%, #000 78%, transparent 92%);
+  transition:margin-top var(--t-slow) var(--ease),opacity var(--t-fast) var(--ease)}
+.ly:first-child{margin-top:0}
+
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.opts button{border:1px solid var(--surface);background:transparent;color:var(--line);
+  border-radius:var(--r-1);padding:0.7em 0.5em;font-family:var(--font-mono);font-size:var(--step-label);
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;text-align:center;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease)}
+.opts button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.desc{margin-top:0.7em;color:var(--muted);font-family:var(--font-mono);font-size:var(--step-small);
+  line-height:1.65;min-height:4.9em}
+.desc b{color:var(--text);font-weight:700}
+
+/* ============ 06 · SIX LINES ============ */
+.menu{position:absolute;inset:0;z-index:24;will-change:transform;
+  display:flex;flex-direction:column;justify-content:center;gap:0.1em;padding:0 14px}
+.menu li{list-style:none;display:flex;align-items:baseline;justify-content:space-between;gap:1em;
+  border-bottom:1px solid var(--surface);padding:0.55em 0}
+.menu .n{font-family:var(--font-mono);font-size:var(--step-label);color:var(--accent);letter-spacing:0.14em}
+.menu .t{font-family:var(--font-edito);font-size:var(--step-h2);line-height:1.05}
+
+/* ============ 07 · LE REGISTRE ============ */
+/* le registre laisse voir le burger fini au-dessus de lui : c est le paiement du film */
+.ledger{position:absolute;inset:34vh 0 0;z-index:28;will-change:transform;
+  background:linear-gradient(to bottom, rgba(11,7,5,0) 0, var(--bg) 16%, var(--bg) 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;gap:clamp(14px,3vh,30px);
+  padding:clamp(30px,6vh,56px) 14px clamp(96px,14vh,120px)}
+.ledger .cols{display:flex;flex-wrap:wrap;gap:clamp(12px,3vw,32px);border-top:1px solid var(--surface);
+  padding-top:clamp(10px,2vh,20px)}
+.ledger .cols > div{flex:1 1 clamp(130px,40vw,200px)}
+.ledger h3{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--muted)}
+.ledger ul{list-style:none;margin-top:0.45em}
+.ledger li{font-size:var(--step-small);line-height:1.85}
+.ledger a{color:var(--text);text-decoration:none;border-bottom:1px solid transparent;
+  transition:border-color var(--t-fast) var(--ease)}
+.ledger a:hover{border-bottom-color:var(--surface)}
+.ledger .mark{font-family:var(--font-edito);font-size:var(--step-h2);line-height:1;font-style:italic}
+.ledger .legal{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.05em;
+  color:var(--muted);max-width:66ch;line-height:1.75}
+
+/* le CTA colle, atteignable de partout */
+.cta{position:fixed;z-index:70;right:14px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 30px);
+  background:var(--accent);color:var(--bg);border:0;border-radius:var(--r-pill);
+  padding:0.8em 1.3em;font-family:var(--font-mono);font-weight:700;font-size:var(--step-label);
+  letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow);
+  text-decoration:none;display:inline-block}
+
+/* ============ ORDINATEUR : la meme scene, deux colonnes ============ */
+@media (min-width:820px){
+  :root{--frame:min(42vw,66vh)}
+  /* sur ordinateur le plan se decale a droite : le texte a sa moitie, l image la sienne */
+  .plate{place-items:center end;padding-right:clamp(24px,5vw,90px)}
+  .plate.wide{place-items:center end}
+  .scrim{top:0;bottom:0;height:auto;right:auto;width:62vw;
+    background:linear-gradient(to right, rgba(11,7,5,0.9) 0%, rgba(11,7,5,0.62) 52%, rgba(11,7,5,0) 100%)}
+  .scrim.low{display:none}
+  .blk{left:clamp(24px,4vw,56px);right:auto;width:min(42vw,620px)}
+  #b4{bottom:auto;top:20vh}
+  .brand{left:clamp(24px,4vw,56px)}
+  .count{right:clamp(24px,4vw,56px)}
+  .ret.a,.ret.c{left:clamp(16px,2.6vw,34px)} .ret.b,.ret.d{right:clamp(16px,2.6vw,34px)}
+  .ruler i,.ruler s{left:clamp(24px,4vw,56px);right:clamp(24px,4vw,56px)}
+  .ruler p{left:clamp(24px,4vw,56px)}
+  .build,.ledger,.menu{padding-left:clamp(24px,4vw,56px);padding-right:clamp(24px,4vw,56px)}
+  .wrap{grid-template-columns:1fr minmax(280px,1fr);gap:clamp(20px,4vw,60px);align-items:center}
+  .stack{--ih:min(62vh,34vw);order:2}
+  .panel{order:1}
+  .opts{grid-template-columns:repeat(3,1fr)}
+  .menu{display:grid;grid-template-columns:1fr 1fr;align-content:center;gap:0 clamp(24px,5vw,72px)}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none} }
+</style>
+</head>
+<body>
+
+<!-- ============ HABILLAGE ============ -->
+<div class="ret a" aria-hidden="true"></div><div class="ret b" aria-hidden="true"></div>
+<div class="ret c" aria-hidden="true"></div><div class="ret d" aria-hidden="true"></div>
+
+<div class="hud">
+  <div class="brand">
+    <svg class="arrow" viewBox="0 0 120 46" fill="none" aria-label="In-N-Out arrow">
+      <path d="M4 8 L96 8 L96 2 L116 14 L96 26 L96 20 L20 20 L20 42 L4 42 Z" fill="currentColor"/>
+    </svg>
+    <b>IN&#8209;N&#8209;OUT</b>
+  </div>
+  <div class="count"><u id="cLab">Since</u><b id="cVal">1948</b></div>
+  <div class="ruler">
+    <p id="rLab">01 · The stand</p>
+    <i></i><s id="rFill" style="width:0"></s><em id="rKnob" style="left:14px"></em>
+  </div>
+  <div class="ticks" aria-hidden="true"><em id="tKnob" style="top:0"></em></div>
+</div>
+
+<a class="cta" href="#find">Find a stand</a>
+
+<!-- ============ LE FILM ============ -->
+<section id="spacer">
+  <div class="stage">
+
+    <div class="plate wide" id="pl1"><picture>
+      <source media="(max-width:819px)" srcset="img/p6-stand-720.webp">
+      <img src="img/p6-stand.webp" alt="A 1948 California drive-thru hamburger stand at dusk under two crossed palm trees." decoding="async">
+    </picture></div>
+
+    <div class="plate" id="pl2"><picture>
+      <source media="(max-width:819px)" srcset="img/p3-potato-720.webp">
+      <img src="img/p3-potato.webp" alt="Whole potatoes beside a hand-crank cutter, fresh fries falling through the blade." decoding="async">
+    </picture></div>
+
+    <div class="plate" id="pl3"><canvas id="seq" aria-label="A raw patty pressed onto the flat top, searing."></canvas></div>
+
+    <div class="plate" id="pl4"><picture>
+      <source media="(max-width:819px)" srcset="img/p4-onion-720.webp">
+      <img src="img/p4-onion.webp" alt="A thick slice of onion caramelising on the flat top." decoding="async">
+    </picture></div>
+
+    <div class="plate" id="pl7"><picture>
+      <source media="(max-width:819px)" srcset="img/p1-double-720.webp">
+      <img src="img/p1-double.webp" alt="A finished Double-Double on a dark plate." decoding="async">
+    </picture></div>
+
+    <div class="scrim" aria-hidden="true"></div>
+    <div class="scrim low" aria-hidden="true"></div>
+
+    <!-- 01 -->
+    <div class="blk" id="b1">
+      <p class="eyebrow">Baldwin Park, California</p>
+      <div class="chap"><span>// 01.</span> The stand</div>
+      <h2>It started<br>in a hundred<br>square feet</h2>
+      <p>1948. Harry Snyder opens California's first drive-thru hamburger stand at Francisquito and Garvey. Every day before dawn he picks the meat and produce himself. Esther keeps the books from the house around the corner.</p>
+    </div>
+
+    <!-- 02 -->
+    <div class="blk" id="b2">
+      <p class="eyebrow">Cut in the store, every day</p>
+      <div class="chap"><span>// 02.</span> The potato</div>
+      <h2>Nothing<br>is frozen</h2>
+      <p>Whole potatoes. A hand crank. That is the entire process. There is no bag, no supplier, no freezer between the field and the fryer.</p>
+    </div>
+
+    <!-- 03 -->
+    <div class="blk" id="b3">
+      <p class="eyebrow">Pressed to order</p>
+      <div class="chap"><span>// 03.</span> The sear</div>
+      <h2>Nothing<br>waits</h2>
+      <p class="cite">"In a world where food is often over-processed, prepackaged and frozen, In-N-Out makes everything the old fashioned way."<br>— in-n-out.com, in a meta tag nobody reads.</p>
+    </div>
+
+    <!-- 04 -->
+    <div class="blk" id="b4">
+      <p class="eyebrow">Created in 1961, by customers</p>
+      <div class="chap"><span>// 04.</span> <em>Animal Style</em></div>
+      <h2>Ask and<br>it changes</h2>
+      <p>"Burger of your choice with hand-leafed lettuce, tomato, a mustard cooked beef patty; add pickle, extra spread with grilled onions."</p>
+    </div>
+
+    <!-- 05 · l outil -->
+    <section class="build" id="build" data-outil aria-label="Build your burger">
+      <div class="top">
+        <h2>Build yours</h2>
+        <span class="mono">// 05.</span>
+      </div>
+      <div class="wrap">
+        <div class="stack" id="stack" aria-live="polite"></div>
+        <div class="panel">
+          <div class="opts" id="opts" role="group" aria-label="Not so secret menu"></div>
+          <p class="desc" id="desc"></p>
+        </div>
+      </div>
+      <p class="mono" style="color:var(--muted)">Their words, not ours. Nothing is ordered here.</p>
+    </section>
+
+    <!-- 06 -->
+    <div class="blk" id="b6" style="z-index:23">
+      <p class="eyebrow">The whole menu</p>
+      <div class="chap"><span>// 06.</span> Six lines</div>
+    </div>
+    <ul class="menu" id="menu">
+      <li><span class="t">Double-Double<sup>®</sup></span><span class="n">01</span></li>
+      <li><span class="t">Cheeseburger</span><span class="n">02</span></li>
+      <li><span class="t">Hamburger</span><span class="n">03</span></li>
+      <li><span class="t">French Fries</span><span class="n">04</span></li>
+      <li><span class="t">Beverages</span><span class="n">05</span></li>
+      <li><span class="t">Shakes</span><span class="n">06</span></li>
+    </ul>
+
+    <!-- 07 -->
+    <section class="ledger" id="find" aria-label="The record">
+      <div class="cols">
+        <div><h3>Menu</h3><ul>
+          <li><a href="https://www.in-n-out.com/menu">The six lines</a></li>
+          <li><a href="https://www.in-n-out.com/menu/not-so-secret-menu">Not so secret menu</a></li></ul></div>
+        <div><h3>Company</h3><ul>
+          <li><a href="https://www.in-n-out.com/history">Since 1948</a></li>
+          <li><a href="https://www.in-n-out.com/locations">Locations</a></li></ul></div>
+        <div><h3>Origin</h3><ul>
+          <li>Baldwin Park, CA</li><li>Harry &amp; Esther Snyder</li></ul></div>
+        <div><h3>The arrow</h3><ul>
+          <li>1954</li><li>"It points to pride"</li></ul></div>
+      </div>
+      <div class="mark"><p>We all work under the same arrow.</p></div>
+      <p class="legal">Unsolicited concept redesign, not affiliated with or endorsed by In-N-Out Burgers. Every figure, quotation and menu description is taken verbatim from in-n-out.com. Concept and build: Dondi Santeme, TheWebDesigner.</p>
+    </section>
+
+    <div class="vign" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script>
+(function(){
+"use strict";
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const seg=(p,a,b)=>Math.max(0,Math.min(1,(p-a)/(b-a)));
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+/* ============ 05 · L OUTIL : le menu secret reel d In-N-Out ============
+   Bandes mesurees sur p5-eclate.png (1744x2336) : y et h en fraction de la hauteur. */
+const BAND={ bunTop:[0.040,0.155], cheese:[0.210,0.065], patty:[0.275,0.090],
+             onion:[0.515,0.080], tomato:[0.590,0.055], lettuce:[0.640,0.100],
+             spread:[0.745,0.060], bunBot:[0.805,0.105] };
+const MENU=[
+ {k:'dd',  n:'Double-Double®', patty:2, cheese:2,
+  d:'Two 100% American beef patties, two slices of American cheese, hand-leafed lettuce, tomato, spread with or without onions, stacked high on a freshly baked bun.'},
+ {k:'ch',  n:'Cheeseburger', patty:1, cheese:1,
+  d:'One 100% American beef patty, one slice of American cheese, hand-leafed lettuce, tomato and spread on a freshly baked bun.'},
+ {k:'ha',  n:'Hamburger', patty:1, cheese:0,
+  d:'One 100% American beef patty, hand-leafed lettuce, tomato and spread on a freshly baked bun. No cheese.'},
+ {k:'3x3', n:'3×3®', patty:3, cheese:3,
+  d:'Our 3×3® or Triple Triple® has three 100% American beef patties, hand-leafed lettuce, tomato, spread, three slices of American cheese, with or without onions, stacked high on a freshly baked bun.'},
+ {k:'4x4', n:'4×4®', patty:4, cheese:4,
+  d:'Our 4×4®, Four by Four® or Quad Quad® has four 100% American beef patties, hand-leafed lettuce, tomato, spread, four slices of American cheese, with or without onions, stacked high on a freshly baked bun.'},
+ {k:'gc',  n:'Grilled Cheese', patty:0, cheese:2,
+  d:'Two slices of melted American cheese, hand-leafed lettuce, tomato, spread with or without onions on a freshly baked bun. No patty at all.'}
+];
+const MODS=[
+ {k:'animal', n:'Animal Style®',
+  d:'Burger of your choice with hand-leafed lettuce, tomato, a mustard cooked beef patty; add pickle, extra spread with grilled onions.'},
+ {k:'protein',n:'Protein Style®',
+  d:'Your favorite burger wrapped in hand-leafed lettuce instead of a bun.'}
+];
+let pick='dd', mods={animal:false,protein:false};
+const stack=document.getElementById('stack'), opts=document.getElementById('opts'), desc=document.getElementById('desc');
+
+function layer(name){ const b=BAND[name]; const d=document.createElement('div');
+  d.className='ly'; d.style.setProperty('--y',b[0]); d.style.setProperty('--h',b[1]); return d; }
+
+function buildStack(){
+  const m=MENU.find(x=>x.k===pick);
+  const seqLy=[];
+  if(mods.protein) seqLy.push('lettuce'); else seqLy.push('bunTop');
+  for(let i=0;i<Math.max(m.patty,m.cheese);i++){
+    if(i<m.cheese) seqLy.push('cheese');
+    if(i<m.patty)  seqLy.push('patty');
+  }
+  if(mods.animal) seqLy.push('onion');
+  seqLy.push('tomato','lettuce','spread');
+  seqLy.push(mods.protein?'lettuce':'bunBot');
+  stack.textContent='';
+  seqLy.forEach(function(n){ stack.appendChild(layer(n)); });
+  /* le recouvrement se resserre quand la pile s allonge : elle tient toujours dans le cadre */
+  stack.style.setProperty('--ov', (0.012 + 0.006*Math.max(0,seqLy.length-8)).toFixed(3));
+  document.getElementById('cLab').textContent='Patties × cheese';
+  document.getElementById('cVal').textContent=m.patty+'×'+m.cheese;
+  let t='<b>'+m.n+'.</b> '+m.d;
+  MODS.forEach(function(x){ if(mods[x.k]) t+=' <b>'+x.n+'.</b> '+x.d; });
+  desc.innerHTML=t;
+}
+MENU.forEach(function(m){ const b=document.createElement('button'); b.type='button';
+  b.innerHTML=m.n; b.setAttribute('aria-pressed', m.k===pick?'true':'false');
+  b.addEventListener('click',function(){ pick=m.k; sync(); }); opts.appendChild(b); });
+MODS.forEach(function(x){ const b=document.createElement('button'); b.type='button';
+  b.innerHTML=x.n; b.setAttribute('aria-pressed','false'); b.dataset.mod=x.k;
+  b.addEventListener('click',function(){ mods[x.k]=!mods[x.k]; sync(); }); opts.appendChild(b); });
+function sync(){ const bs=opts.children;
+  for(let i=0;i<bs.length;i++){ const el=bs[i];
+    if(el.dataset.mod) el.setAttribute('aria-pressed', mods[el.dataset.mod]?'true':'false');
+    else el.setAttribute('aria-pressed', MENU[i].k===pick?'true':'false'); }
+  buildStack(); }
+
+/* ============ 03 · p2-smash : sequence WebP scrubbee, jamais un mp4 ============ */
+const FR=54, DIR = innerWidth<820 ? 'img/p2-smash-720/' : 'img/p2-smash-1280/';
+const imgs=[]; let ready=0;
+for(let i=1;i<=FR;i++){ const im=new Image();
+  im.onload=function(){ ready++; if(ready===1) drawSeq(0); };
+  im.src=DIR+String(i).padStart(3,'0')+'.webp'; imgs.push(im); }
+const cv=document.getElementById('seq'), cx=cv.getContext('2d');
+function sizeSeq(){ const r=cv.getBoundingClientRect(); const dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); cx.setTransform(dpr,0,0,dpr,0,0); }
+function drawSeq(k){ const im=imgs[Math.max(0,Math.min(FR-1,Math.round(k*(FR-1))))];
+  if(!im||!im.complete||!im.naturalWidth) return;
+  const r=cv.getBoundingClientRect(), w=r.width, h=r.height;
+  const s=Math.min(w/im.naturalWidth, h/im.naturalHeight);   /* contain : meme cadrage partout */
+  const dw=im.naturalWidth*s, dh=im.naturalHeight*s;
+  cx.clearRect(0,0,w,h); cx.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh); }
+
+/* ============ LE FILM : une seule tete de lecture ============ */
+const pl1=document.getElementById('pl1'), pl2=document.getElementById('pl2'),
+      pl3=document.getElementById('pl3'), pl4=document.getElementById('pl4'),
+      pl7=document.getElementById('pl7');
+const b1=document.getElementById('b1'), b2=document.getElementById('b2'),
+      b3=document.getElementById('b3'), b4=document.getElementById('b4'),
+      b6=document.getElementById('b6'), menu=document.getElementById('menu'),
+      build=document.getElementById('build'), ledger=document.getElementById('find');
+const put=(el,y)=>{ el.style.transform='translate3d(0,'+y+'vh,0)'; };
+const rFill=document.getElementById('rFill'), rKnob=document.getElementById('rKnob'),
+      rLab=document.getElementById('rLab'), tKnob=document.getElementById('tKnob'),
+      cLab=document.getElementById('cLab'), cVal=document.getElementById('cVal');
+const CH=[[0.00,'01 · The stand','Since','1948'],
+          [0.14,'02 · The potato','Freezers','0'],
+          [0.30,'03 · The sear','Flat top','°F'],
+          [0.50,'04 · Animal Style','Created','1961'],
+          [0.62,'05 · Build yours','Patties × cheese','2×2'],
+          [0.82,'06 · Six lines','Menu','6'],
+          [0.92,'07 · Find a stand','Under one','ARROW']];
+let curCh=-1;
+
+function render(p){
+  /* R5 · plongee macro dans la fenetre de service */
+  pl1.style.transform='scale('+lerp(1,1.34,seg(p,0.11,0.20)).toFixed(3)+')';
+  pl1.style.opacity=(1-seg(p,0.17,0.21)).toFixed(3);
+  /* 02 · les patates arrivent par le bas, trois plans de profondeur */
+  pl2.style.transform='translate3d(0,'+(lerp(104,0,seg(p,0.15,0.21))+lerp(0,-112,seg(p,0.31,0.38))).toFixed(1)+'vh,0) scale('+lerp(1.08,1,seg(p,0.15,0.28)).toFixed(3)+')';
+  /* R2 · le franchissement se joue a 0.315, milieu exact de la plage */
+  pl3.style.transform='translate3d(0,'+lerp(104,0,seg(p,0.28,0.35)).toFixed(1)+'vh,0)';
+  /* R6 · metamorphose : le cadrage ne bouge pas, seule la cuisson avance */
+  drawSeq(seg(p,0.34,0.50));
+  pl3.style.opacity=(1-seg(p,0.50,0.545)).toFixed(3);
+  pl4.style.transform='translate3d(0,'+lerp(104,0,seg(p,0.495,0.55)).toFixed(1)+'vh,0) scale('+lerp(1.06,1,seg(p,0.495,0.62)).toFixed(3)+')';
+  /* l oignon sort avant le chapitre 06 : le menu ne se lit pas par-dessus une image */
+  pl4.style.opacity=(1-seg(p,0.80,0.845)).toFixed(3);
+  /* le burger fini arrive AVANT le registre, et le registre le laisse voir au-dessus de lui */
+  pl7.style.opacity=seg(p,0.885,0.925).toFixed(3);
+
+  /* chaque bloc entre AVANT que le precedent soit sorti : aucun ecran sans texte */
+  put(b1, lerp(0,118,seg(p,0.095,0.155)));
+  put(b2, lerp(118,0,seg(p,0.105,0.165))+lerp(0,-118,seg(p,0.255,0.305)));
+  put(b3, lerp(118,0,seg(p,0.25,0.31))+lerp(0,-118,seg(p,0.455,0.505)));
+  put(b4, lerp(118,0,seg(p,0.45,0.51))+lerp(0,-118,seg(p,0.585,0.63)));
+  /* R3 · recouvrement : le panneau remonte par-dessus, aucun fondu */
+  put(build, lerp(104,0,seg(p,0.58,0.645))+lerp(0,-104,seg(p,0.815,0.865)));
+  put(b6, lerp(118,0,seg(p,0.81,0.86))+lerp(0,-118,seg(p,0.895,0.93)));
+  put(menu, lerp(104,0,seg(p,0.805,0.86))+lerp(0,-104,seg(p,0.89,0.935)));
+  /* R7 · dissolution granuleuse juste avant le registre */
+  document.documentElement.style.setProperty('--grain-opacity', (0.055+seg(p,0.885,0.94)*0.20).toFixed(3));
+  put(ledger, lerp(104,0,seg(p,0.915,0.965)));
+
+  /* l habillage tourne sur la MEME tete de lecture : le scroll produit de la lecture */
+  const pct=(p*100).toFixed(2);
+  rFill.style.width='calc((100% - 28px) * '+p.toFixed(4)+')';
+  rKnob.style.left='calc(14px + (100% - 41px) * '+p.toFixed(4)+')';
+  tKnob.style.top=pct+'%';
+  let k=0; for(let i=0;i<CH.length;i++){ if(p>=CH[i][0]) k=i; }
+  if(k!==curCh){ curCh=k; rLab.textContent=CH[k][1];
+    if(k!==4){ cLab.textContent=CH[k][2]; cVal.textContent=CH[k][3]; } else { sync(); } }
+  if(k===2){ cLab.textContent='Flat top';
+    cVal.textContent=Math.round(lerp(70,375,seg(p,0.30,0.50)))+'°'; }
+}
+
+let lenis=null;
+gsap.registerPlugin(ScrollTrigger);
+if(!REDUCED&&window.Lenis){ lenis=new Lenis({lerp:0.08});
+  lenis.on('scroll',ScrollTrigger.update);
+  gsap.ticker.add(function(t){ if(lenis) lenis.raf(t*1000); });
+  gsap.ticker.lagSmoothing(0); }
+window.captureMode=function(){ if(lenis&&lenis.destroy){lenis.destroy();lenis=null;} ScrollTrigger.refresh(); };
+
+const FRAMES=1000, playhead={f:0};
+const film=gsap.timeline({ scrollTrigger:{ trigger:'#spacer', start:'top top', end:'bottom bottom',
+  scrub:true, pin:'.stage', anticipatePin:1 }, defaults:{ease:'none'} });
+film.to(playhead,{ f:FRAMES-1, duration:1, onUpdate:function(){ render(playhead.f/(FRAMES-1)); } },0);
+film.addLabel('ch1',0).addLabel('ch2',0.14).addLabel('ch3',0.30).addLabel('ch4',0.50)
+    .addLabel('ch5',0.62).addLabel('ch6',0.82).addLabel('ch7',0.92);
+
+window.addEventListener('resize',function(){ sizeSeq(); drawSeq(0); ScrollTrigger.refresh(); });
+sizeSeq(); buildStack(); render(0);
+})();
+</script>
+</body>
+</html>
