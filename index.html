@@ -44,10 +44,12 @@ img{display:block;max-width:100%}
 .mono{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
 
 /* ================================================================
-   LE HERO EST UNE VIDEO. Plus aucun scroll-scrub nulle part sur le site,
-   plus aucun pin. Le film tourne tout seul et le texte suit SA timeline,
-   pas celle du scroll. C est le seul mp4 du site, et c est un fond
-   d ambiance : aucun plan de film n est un mp4.
+   LE HERO EST UNE VIDEO, ET C EST UNE SEULE PRISE CONTINUE.
+   Plus de montage, plus de volets, plus aucune coupure de scene : un seul
+   mouvement de camera qui suit la boulette de la main au plateau. Plus aucun
+   scroll-scrub nulle part sur le site, plus aucun pin. Le texte suit LA
+   TIMELINE DE LA VIDEO, pas celle du scroll. C est le seul mp4 du site et
+   c est un fond d ambiance : aucun plan de film n est un mp4.
    ================================================================ */
 #hero{position:relative;height:100vh;height:100dvh;min-height:560px;overflow:hidden;background:var(--bg)}
 #reel{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -230,13 +232,13 @@ img{display:block;max-width:100%}
   <div class="ret c" aria-hidden="true"></div><div class="ret d" aria-hidden="true"></div>
 
   <div class="cap">
-    <p class="eyebrow" id="cEye">Baldwin Park &middot; 1948</p>
-    <h1 id="cH">A hundred<br>square feet</h1>
-    <p id="cP">The first drive-thru in California.</p>
+    <p class="eyebrow" id="cEye">Held cold</p>
+    <h1 id="cH">Nothing<br>is frozen</h1>
+    <p id="cP">No freezer in any store.</p>
   </div>
-  <div class="count"><u id="gLab">Square feet</u><b id="gVal">100</b></div>
+  <div class="count"><u id="gLab">Freezers</u><b id="gVal">0</b></div>
 
-  <div class="tl"><i></i><s id="tFill" style="width:0"></s><p id="tLab">01 / 13</p></div>
+  <div class="tl"><i></i><s id="tFill" style="width:0"></s><p id="tLab">01 / 05</p></div>
   <p class="cue">Scroll &darr;</p>
   <div class="grain" aria-hidden="true"></div>
 </section>
@@ -320,19 +322,11 @@ reel.src = MOB ? 'hero-reel-720.mp4' : 'hero-reel-1080.mp4';
 /* Le texte suit la timeline de la VIDEO, pas celle du scroll : c est elle qui
    raconte maintenant. Les repères sont les milieux de volet du montage. */
 const CUE=[
- [0.00,'Baldwin Park · 1948','A hundred<br>square feet','The first drive-thru in California.','Square feet','100'],
- [2.97,'Held cold','Nothing<br>is frozen','No freezer in any store.','Freezers','0'],
- [5.65,'Pressed to order','Nothing<br>waits','It cooks once you have asked.','Flat top','230°'],
- [8.37,'Flat top · all at once','All at<br>once','Never before. Never for later.','At once','4'],
- [11.12,'100% American beef','Ground<br>fresh','From their own facilities.','Blend','80/20'],
- [13.87,'Sponge dough','Baked this<br>morning','Toasted for every order.','Dough','Sponge'],
- [16.62,'Whole potatoes, a hand crank','Cut in<br>the store','Nothing between field and fryer.','Suppliers','0'],
- [19.37,'Out of the oil','Never<br>held','No heat lamp in the building.','Heat lamps','0'],
- [22.12,'Created in 1961, by customers','<em>Animal</em><br>Style','Mustard cooked, grilled onions.','Created','1961'],
- [24.87,'Real American','Melted<br>on','The moment it leaves the steel.','Slices','2'],
- [27.62,'The one thing they never sell','Their<br>spread','Extra, if you ask for it.','Recipe','1948'],
- [30.37,'Layer by layer','Built in<br>four minutes','While you wait in the car.','Minutes','4'],
- [32.99,'Six lines on the menu','Made when<br>you order it','Nothing on it was waiting.','Menu lines','6']];
+ [0.00,'Held cold','Nothing<br>is frozen','No freezer in any store.','Freezers','0'],
+ [2.20,'Pressed to order','Nothing<br>waits','It cooks once you have asked.','Flat top','230°'],
+ [5.00,'Created in 1961, by customers','<em>Animal</em><br>Style','Mustard cooked, grilled onions.','Created','1961'],
+ [7.00,'Real American','Melted<br>on','The moment it leaves the steel.','Slices','2'],
+ [8.90,'Six lines on the menu','Made when<br>you order it','Nothing on it was waiting.','Menu lines','6']];
 const cEye=document.getElementById('cEye'), cH=document.getElementById('cH'), cP=document.getElementById('cP'),
       gLab=document.getElementById('gLab'), gVal=document.getElementById('gVal'),
       tFill=document.getElementById('tFill'), tLab=document.getElementById('tLab');
@@ -346,7 +340,7 @@ reel.addEventListener('timeupdate',function(){
   cur=k;
   cEye.innerHTML=CUE[k][1]; cH.innerHTML=CUE[k][2]; cP.innerHTML=CUE[k][3];
   gLab.textContent=CUE[k][4]; gVal.textContent=CUE[k][5];
-  tLab.textContent=String(k+1).padStart(2,'0')+' / 13';
+  tLab.textContent=String(k+1).padStart(2,'0')+' / 0'+CUE.length;
 });
 /* certains navigateurs refusent la lecture automatique tant qu il n y a pas eu
    d interaction : on relance au premier geste, sans jamais afficher de controle. */
