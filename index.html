@@ -376,11 +376,16 @@ const MENU=[
   d:'Your favorite burger wrapped in hand-leafed lettuce instead of a bun.'}
 ];
 let pick='dd';
+/* Les huit photos sont prechargees : sans ca, le premier clic sur une commande
+   remplace l image par une case noire pendant le telechargement. Vu dans la
+   video de la visite guidee, 2026-08-12. */
+const PRE=[];
 const opts=document.getElementById('opts'),
       bName=document.getElementById('bName'), bCount=document.getElementById('bCount'),
       desc=document.getElementById('desc');
 /* reassigne a chaque changement de commande : donc let, pas const. */
 let bimg=document.getElementById('bimg');
+MENU.forEach(function(m){ const im=new Image(); im.src=(MOB?'img/'+m.img+'-720.webp':'img/'+m.img+'.webp'); PRE.push(im); });
 MENU.forEach(function(m){ const b=document.createElement('button'); b.type='button';
   b.innerHTML=m.n; b.setAttribute('aria-pressed', m.k===pick?'true':'false');
   b.addEventListener('click',function(){ pick=m.k; paint(); }); opts.appendChild(b); });
