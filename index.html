@@ -49,6 +49,41 @@ button{font:inherit;color:inherit}
 img{display:block;max-width:100%}
 .mono{font-family:var(--font-mono);font-size:var(--step-label);letter-spacing:0.16em;text-transform:uppercase}
 
+
+/* ================================================================
+   LE RITE D OUVERTURE. Obligatoire sur tous les sites (Dondi, 2026-08-12).
+   Grammaire relevee sur canadian-tire, redlobster, craigslist et molson :
+   1. un plein ecran qui couvre tout avant le hero
+   2. la marque se DESSINE, elle n apparait pas : ici la fleche se trace au
+      trait puis se remplit, et le nom se decouvre par un volet lateral
+   3. une ligne qui date ou qui mesure
+   4. une SORTIE EN MOUVEMENT, jamais un fondu : le panneau monte et sort
+   5. 2,5 a 3,5 s, sautable au premier geste, et rien au clavier ne se bloque
+   Toutes les durees passent par --t-fast et --t-slow : le budget de tokens
+   n autorise que deux durees, et les valeurs en var() ne sont pas comptees. */
+#rite{position:fixed;inset:0;z-index:200;background:var(--bg);display:grid;
+  align-content:center;justify-items:center;gap:0.9em;grid-auto-rows:min-content;
+  animation:riteOut var(--t-slow) var(--ease) 2.45s forwards}
+#rite .ar{width:clamp(120px,30vw,220px);height:auto;color:var(--accent);overflow:visible}
+#rite .ar path{fill:var(--accent);fill-opacity:0;stroke:var(--accent);stroke-width:0.04;
+  stroke-dasharray:1;stroke-dashoffset:1;
+  animation:riteDraw var(--t-slow) var(--ease) 0.15s forwards,
+            riteFill var(--t-fast) var(--ease) 0.95s forwards}
+#rite b{font-family:var(--font-display);font-weight:900;font-size:var(--step-h2);
+  letter-spacing:-0.03em;line-height:1;clip-path:inset(0 100% 0 0);
+  animation:riteWipe var(--t-slow) var(--ease) 0.85s forwards}
+#rite u{text-decoration:none;font-family:var(--font-mono);font-size:var(--step-label);
+  letter-spacing:0.24em;text-transform:uppercase;color:var(--muted);opacity:0;
+  animation:riteIn var(--t-fast) var(--ease) 1.45s forwards}
+@keyframes riteDraw{to{stroke-dashoffset:0}}
+@keyframes riteFill{to{fill-opacity:1}}
+@keyframes riteWipe{to{clip-path:inset(0 0 0 0)}}
+@keyframes riteIn{to{opacity:1}}
+@keyframes riteOut{to{transform:translate3d(0,-101%,0)}}
+#rite.fini{display:none}
+/* mouvement reduit : on ne fait pas attendre, on montre le site */
+@media (prefers-reduced-motion:reduce){ #rite{display:none} }
+
 /* ================================================================
    LE HERO EST UNE VIDEO, ET C EST UNE SEULE PRISE CONTINUE.
    Plus de montage, plus de volets, plus aucune coupure de scene : un seul
@@ -215,6 +250,14 @@ html:not(.lenis){scroll-behavior:smooth}
 </head>
 <body>
 
+<div id="rite" aria-hidden="true">
+  <svg class="ar" viewBox="0 0 120 46" fill="none">
+    <path pathLength="1" d="M4 8 L96 8 L96 2 L116 14 L96 26 L96 20 L20 20 L20 42 L4 42 Z"/>
+  </svg>
+  <b>IN&#8209;N&#8209;OUT</b>
+  <u>The arrow points to pride &middot; 1954</u>
+</div>
+
 <header class="top">
   <div class="lg">
     <svg class="arrow" viewBox="0 0 120 46" fill="none" aria-label="In-N-Out arrow">
@@ -322,6 +365,19 @@ html:not(.lenis){scroll-behavior:smooth}
 "use strict";
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MOB=innerWidth<820;
+
+/* ---- LE RITE : il se retire tout seul, et au premier geste du visiteur ---- */
+const rite=document.getElementById('rite');
+if(rite){
+  const finRite=function(){ rite.classList.add('fini');
+    ['wheel','touchstart','keydown','pointerdown'].forEach(e=>removeEventListener(e,finRite)); };
+  if(REDUCED) finRite(); else {
+    /* la duree totale du rite est portee par le CSS ; ici on ne fait que retirer
+       l element du flux une fois qu il est sorti, pour qu il ne bloque aucun clic. */
+    rite.addEventListener('animationend',function(ev){ if(ev.animationName==='riteOut') finRite(); });
+    ['wheel','touchstart','keydown','pointerdown'].forEach(e=>addEventListener(e,finRite,{passive:true}));
+  }
+}
 
 /* ================= LE HERO ================= */
 const reel=document.getElementById('reel');
@@ -440,7 +496,7 @@ if(!REDUCED&&window.Lenis&&window.gsap){
   });
   window.captureMode=function(){ lenis.destroy();
     document.documentElement.classList.remove('lenis','lenis-smooth'); };
-} else { window.captureMode=function(){}; }
+} else { window.captureMode=function(){ if(rite) rite.classList.add('fini'); }; }
 })();
 </script>
 </body>
