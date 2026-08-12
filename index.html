@@ -34,7 +34,13 @@
   --pad:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg);scroll-behavior:smooth}
+html{background:var(--bg)}
+/* ---- feuille de style de Lenis, obligatoire. Sans ces trois regles, le
+   defilement doux se bat contre le defilement natif et la page n avance plus. ---- */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto !important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:var(--step-body);
   line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:clip}
 button{font:inherit;color:inherit}
@@ -203,6 +209,8 @@ img{display:block;max-width:100%}
   .ar:nth-child(1){flex-basis:calc(44% - 6px)}
 }
 @media (prefers-reduced-motion:reduce){ *{transition:none;animation:none} html{scroll-behavior:auto} }
+/* sans Lenis (mouvement reduit), on rend le defilement doux au navigateur */
+html:not(.lenis){scroll-behavior:smooth}
 </style>
 </head>
 <body>
@@ -393,7 +401,40 @@ if(!REDUCED&&window.Lenis&&window.gsap){
   const lenis=new Lenis({lerp:0.09});
   gsap.ticker.add(function(t){ lenis.raf(t*1000); });
   gsap.ticker.lagSmoothing(0);
-  window.captureMode=function(){ lenis.destroy(); };
+  /* une ancre native repositionne le document sans prevenir Lenis, qui repart
+     alors de son ancienne position : on lui confie le deplacement. */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      const t=document.querySelector(a.getAttribute('href'));
+      if(!t) return; e.preventDefault(); lenis.scrollTo(t,{offset:-8});
+    });
+  });
+  /* Lenis n intercepte pas le clavier : la touche Fin deplace le document en
+     natif, Lenis garde son ancienne cible et ramene la page en arriere. Le
+     contrat exige que tout soit utilisable au clavier seul, donc on lui confie
+     aussi les touches de defilement. */
+  const CH=()=>Math.max(0,document.documentElement.scrollHeight-innerHeight);
+  addEventListener('keydown',function(e){
+    if(e.ctrlKey||e.altKey||e.metaKey) return;
+    const t=e.target;
+    if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    const page=innerHeight*0.88;
+    let d=null;
+    switch(e.key){
+      case 'End': d=CH(); break;
+      case 'Home': d=0; break;
+      case 'PageDown': d=lenis.targetScroll+page; break;
+      case 'PageUp':   d=lenis.targetScroll-page; break;
+      case ' ':        d=lenis.targetScroll+(e.shiftKey?-page:page); break;
+      case 'ArrowDown':d=lenis.targetScroll+120; break;
+      case 'ArrowUp':  d=lenis.targetScroll-120; break;
+      default: return;
+    }
+    e.preventDefault();
+    lenis.scrollTo(Math.max(0,Math.min(CH(),d)));
+  });
+  window.captureMode=function(){ lenis.destroy();
+    document.documentElement.classList.remove('lenis','lenis-smooth'); };
 } else { window.captureMode=function(){}; }
 })();
 </script>
